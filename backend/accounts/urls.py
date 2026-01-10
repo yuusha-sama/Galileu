@@ -1,10 +1,7 @@
-from django.urls import path
-from .views import health, register, login_view, me, logout_view
+from django.contrib import admin
+from django.urls import path, include
 
 urlpatterns = [
-    path("", health, name="auth-health"),
-    path("register/", register, name="register"),
-    path("login/", login_view, name="login"),
-    path("me/", me, name="me"),
-    path("logout/", logout_view, name="logout"),
+    path("admin/", admin.site.urls),
+    path("auth/", include("accounts.urls")),
 ]
