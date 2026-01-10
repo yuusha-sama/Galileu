@@ -1,125 +1,100 @@
-(() => {
-  "use strict";
-
-  // Marca página carregada (útil pra CSS dependente de JS)
-  window.addEventListener("load", () => {
-    document.documentElement.classList.add("js");
-    document.body.classList.add("loaded");
+async function api(path, opts = {}) {
+  const res = await fetch(`/api/auth${path}`, {
+    ...opts,
+    credentials: "include",
+    headers: { "Content-Type": "application/json", ...(opts.headers || {}) },
   });
 
-  // Helpers
-  const $ = (sel, root = document) => root.querySelector(sel);
-  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+  const text = await res.text();
+  let data = null;
+  try { data = text ? JSON.parse(text) : null; } catch {}
 
-  /* ===============================
-     Rolagem suave para âncoras
-     =============================== */
-  $$('a[href^="#"]').forEach((a) => {
-    a.addEventListener("click", (e) => {
-      const id = a.getAttribute("href");
-      if (!id || id === "#") return;
-
-      const target = document.querySelector(id);
-      if (!target) return;
-
-      e.preventDefault();
-      target.scrollIntoView({ behavior: "smooth", block: "start" });
-      history.replaceState(null, "", id);
-    });
-  });
-
-  /* ===============================
-     Header com estado ao rolar
-     =============================== */
-  const header = $("header") || $(".header") || $("#header");
-
-  const onScroll = () => {
-    if (!header) return;
-    if (window.scrollY > 20) header.classList.add("scrolled");
-    else header.classList.remove("scrolled");
-  };
-
-  window.addEventListener("scroll", onScroll, { passive: true });
-  onScroll();
-
-  /* ===============================
-     Menu mobile / hamburger
-     =============================== */
-  const menuBtn =
-    $('[data-menu-toggle]') ||
-    $(".menu-toggle") ||
-    $("#menu-toggle") ||
-    $(".hamburger") ||
-    $(".btn-menu");
-
-  const nav =
-    $('[data-menu]') ||
-    $("nav") ||
-    $(".nav") ||
-    $("#nav") ||
-    $(".navbar");
-
-  const OPEN_CLASS = "menu-open";
-  const ACTIVE_CLASS = "active";
-
-  const isOpen = () => document.body.classList.contains(OPEN_CLASS);
-
-  const openMenu = () => {
-    document.body.classList.add(OPEN_CLASS);
-    nav && nav.classList.add(ACTIVE_CLASS);
-    menuBtn && menuBtn.setAttribute("aria-expanded", "true");
-  };
-
-  const closeMenu = () => {
-    document.body.classList.remove(OPEN_CLASS);
-    nav && nav.classList.remove(ACTIVE_CLASS);
-    menuBtn && menuBtn.setAttribute("aria-expanded", "false");
-  };
-
-  const toggleMenu = () => (isOpen() ? closeMenu() : openMenu());
-
-  if (menuBtn) {
-    menuBtn.setAttribute("aria-expanded", "false");
-    menuBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      toggleMenu();
-    });
+  if (!res.ok) {
+    const msg = (data && (data.error || data.detail)) || `Erro ${res.status}`;
+    throw new Error(msg);
   }
+  return data;
+}
 
-  // Fecha menu ao clicar em link
-  if (nav) {
-    nav.addEventListener("click", (e) => {
-      const link = e.target.closest("a");
-      if (link && isOpen()) closeMenu();
-    });
+function showAlert(msg) {
+  const el = document.querySelector("#auth-alert");
+  if (!el) {
+    alert(msg);
+    return;
   }
+  el.textContent = msg;
+  el.classList.add("show");
+}
 
-  // Fecha menu com ESC
-  window.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && isOpen()) closeMenu();
-  });
+function clearAlert() {
+  const el = document.querySelector("#auth-alert");
+  if (!el) return;
+  el.textContent = "";
+  el.classList.remove("show");
+}
 
-  // Fecha menu ao clicar fora
-  document.addEventListener("click", (e) => {
-    if (!isOpen()) return;
-    if (
-      (nav && nav.contains(e.target)) ||
-      (menuBtn && menuBtn.contains(e.target))
-    )
+function bindRegisterForm() {
+  const form = document.querySelector("#cadastro-form");
+  if (!form) return;
+
+  form.addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    clearAlert();
+
+    const email = document.querySelector("#cadastro-email")?.value?.trim();
+    const username = document.querySelector("#cadastro-nome")?.value?.trim();
+    const password = document.querySelector("#cadastro-senha")?.value || "";
+    const confirm = document.querySelector("#cadastro-confirmar")?.value || "";
+
+    if (password !== confirm) {
+      showAlert("As senhas não coincidem.");
       return;
-    closeMenu();
+    }
+
+    try {
+      // CADASTRO
+      await api("/register/", {
+        method: "POST",
+        body: JSON.stringify({ username, email, password }),
+      });
+
+      // LOGIN AUTOMÁTICO
+      await api("/login/", {
+        method: "POST",
+        body: JSON.stringify({ email, password }),
+      });
+
+      window.location.href = "/minha-equipe.html";
+    } catch (e) {
+      showAlert(e.message);
+    }
   });
+}
 
-  /* ===============================
-     Link ativo no menu
-     =============================== */
-  const currentPage = location.pathname.split("/").pop() || "index.html";
+function bindLoginForm() {
+  const form = document.querySelector("#login-form");
+  if (!form) return;
 
-  $$("a[href]").forEach((a) => {
-    const href = a.getAttribute("href");
-    if (!href) return;
+  form.addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    clearAlert();
 
-    const clean = href.split("#")[0].split("?")[0];
-    if (clean === currentPage) a.classList.add("is-current");
+    const email = document.querySelector("#login-email")?.value?.trim();
+    const password = document.querySelector("#login-senha")?.value || "";
+
+    try {
+      await api("/login/", {
+        method: "POST",
+        body: JSON.stringify({ email, password }),
+      });
+      window.location.href = "/minha-equipe.html";
+    } catch (e) {
+      showAlert(e.message);
+    }
   });
-})();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  bindRegisterForm();
+  bindLoginForm();
+});

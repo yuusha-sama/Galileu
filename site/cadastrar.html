@@ -36,17 +36,17 @@
     <header>
         <nav>
             <div class="logo">
-                <a href="index.html"><img src="./assets/img/GalileuLogo.png" alt="Logo da Galileu Robotics"></a>
+                <a href="/"><img src="/assets/img/GalileuLogo.png" alt="Logo da Galileu Robotics"></a>
             </div>
             <ul>
-                <li><a href="eventos.html">Eventos</a></li>
-                <li><a href="blog.html">Blog</a></li>
-                <li><a href="artigo.html">Forum</a></li>
-                <li><a href="sobre.html">Sobre Nós</a></li>
+                <li><a href="/eventos.html">Eventos</a></li>
+                <li><a href="/blog.html">Blog</a></li>
+                <li><a href="/artigo.html">Forum</a></li>
+                <li><a href="/sobre.html">Sobre Nós</a></li>
             </ul>
             <div class="auth-buttons">
-                <a id="btn-login-nav" href="cadastrar.html" class="btn">
-                    <img src="./assets/img/leoLogin.png" alt="LoginLeo">
+                <a id="btn-login-nav" href="/cadastrar.html" class="btn">
+                    <img src="/assets/img/leoLogin.png" alt="LoginLeo">
                     <span>LOGIN / CADASTRE-SE</span>
                 </a>
             </div>
@@ -55,7 +55,7 @@
 
     <main>
         <div class="banner">
-            <img src="./assets/img/banner com vários leos laranjas.png" alt="banner com vários leos laranjas">
+            <img src="/assets/img/banner com vários leos laranjas.png" alt="banner com vários leos laranjas">
         </div>
 
         <div id="auth-alert" class="auth-alert" role="alert"></div>
@@ -145,13 +145,13 @@
                     </div>
                     <div class="footer-social">
                         <a href="https://www.instagram.com/galileurobotics">
-                            <img src="./assets/img/iconeInsta.png" alt="Instagram">
+                            <img src="/assets/img/iconeInsta.png" alt="Instagram">
                         </a>
                         <a href="https://www.linkedin.com/company/galileu-robotics/?viewAsMember=true">
-                            <img src="./assets/img/iconeLinkedin.png" alt="linkedIn">
+                            <img src="/assets/img/iconeLinkedin.png" alt="linkedIn">
                         </a>
                         <a href="#">
-                            <img src="./assets/img/iconeYT.png" alt="YouTube">
+                            <img src="/assets/img/iconeYT.png" alt="YouTube">
                         </a>
                     </div>
                 </div>
@@ -166,12 +166,8 @@
         </div>
     </footer>
 
-    <!-- ORDEM IMPORTA -->
-    <script src="config.js"></script>
-    <script src="js/api.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/navbar.js"></script>
-    <script src="js/cadastrar.page.js"></script>
+    <!-- JS ÚNICO (evita paths quebrados) -->
+    <script src="/js/main.js"></script>
 </body>
 
 </html>
