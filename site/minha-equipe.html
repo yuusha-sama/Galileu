@@ -3,18 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Minha Equipe</title>
+  <title>Minha Equipe - Galileu</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Exo+2:wght@700;800&family=Lato:wght@400;700&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="/css/style.css">
-  <!-- Se você tiver um CSS específico pra essa página, pode manter aqui -->
-  <!-- <link rel="stylesheet" href="/css/minha-equipe.css"> -->
 
   <style>
-    /* Só pro hamburger e menu não ficarem “crus” */
     .nav-right { display:flex; align-items:center; gap:12px; }
 
     .hamburger-btn{
@@ -74,8 +71,110 @@
     }
     .user-menu a:hover,
     .user-menu button:hover{ background: rgba(255,255,255,.10); }
-
     .user-menu .danger{ color:#ffb3b3; }
+
+    /* Conteúdo da página */
+    .page-wrap{
+      max-width:1200px;
+      margin: 24px auto;
+      padding: 0 16px;
+      font-family: Lato, Arial, sans-serif;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 320px 1fr;
+      gap:16px;
+    }
+
+    .card{
+      border:2px solid #ff7b00;
+      border-radius:16px;
+      background:#fff;
+      padding:16px;
+    }
+
+    .profile-top{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:10px;
+    }
+
+    .avatar{
+      width:140px; height:140px;
+      border-radius:18px;
+      border:2px solid rgba(0,0,0,.08);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+      background:#f5f5f5;
+    }
+
+    .avatar img{ width:100%; height:100%; object-fit:cover; }
+
+    .btn-black{
+      width:100%;
+      border:none;
+      background:#111;
+      color:#fff;
+      padding:10px 12px;
+      border-radius:999px;
+      cursor:pointer;
+      font-weight:700;
+    }
+
+    .btn-orange{
+      border:none;
+      background:#ff7b00;
+      color:#fff;
+      padding:10px 12px;
+      border-radius:999px;
+      cursor:pointer;
+      font-weight:700;
+    }
+
+    .kv{
+      width:100%;
+      margin-top:10px;
+      font-size:14px;
+    }
+    .kv p{ margin:6px 0; }
+
+    .row2{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:16px;
+      margin-top:16px;
+    }
+
+    .list{
+      margin:10px 0 0 0;
+      padding:0;
+      list-style:none;
+      border-top:1px solid rgba(0,0,0,.08);
+    }
+    .list li{
+      padding:10px 0;
+      border-bottom:1px solid rgba(0,0,0,.08);
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+    }
+
+    .input{
+      width:100%;
+      border:1px solid rgba(0,0,0,.20);
+      border-radius:999px;
+      padding:10px 12px;
+      outline:none;
+    }
+
+    @media(max-width: 980px){
+      .grid{ grid-template-columns: 1fr; }
+      .row2{ grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 
@@ -94,17 +193,14 @@
       </ul>
 
       <div class="nav-right">
-        <!-- Botão padrão (quando NÃO logado) -->
         <a id="btn-login-nav" href="/cadastrar.html" class="btn">
           <img src="/assets/img/leoLogin.png" alt="LoginLeo">
           <span>LOGIN / CADASTRE-SE</span>
         </a>
 
-        <!-- Hamburger (quando logado) -->
         <button id="hamburger-btn" class="hamburger-btn" aria-label="Menu" type="button">☰</button>
       </div>
 
-      <!-- Dropdown do usuário -->
       <div id="user-menu" class="user-menu" aria-hidden="true">
         <div class="who">
           <b id="user-menu-name">Usuário</b>
@@ -118,18 +214,78 @@
     </nav>
   </header>
 
-  <main>
-    <!-- SEU CONTEÚDO DA PÁGINA AQUI -->
-    <!-- Mantém como está hoje (cards, inputs, etc). -->
-    <div style="padding: 24px;">
-      <!-- Exemplo: você pode manter seu layout real aqui -->
+  <main class="page-wrap">
+    <div class="grid">
+      <!-- Perfil -->
+      <section class="card">
+        <div class="profile-top">
+          <div class="avatar">
+            <img src="/assets/img/leoLogin.png" alt="Avatar">
+          </div>
+
+          <button class="btn-black" type="button">Editar foto</button>
+        </div>
+
+        <div class="kv">
+          <p><b>Email:</b> <span id="me-email">-</span></p>
+          <p><b>Nome:</b> <span id="me-name">-</span></p>
+          <p><b>Data de nasc.:</b> <span id="me-birth">-</span></p>
+          <p><b>CPF:</b> <span id="me-cpf">-</span></p>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:12px;">
+          <button class="btn-orange" type="button">★ Capitão</button>
+          <button id="btn-logout-local" class="btn-black" type="button" style="max-width:140px;">Sair</button>
+        </div>
+      </section>
+
+      <!-- Conteúdo -->
+      <section>
+        <div class="card">
+          <h2 style="margin:0 0 10px 0;">Equipe</h2>
+
+          <div style="display:flex; gap:14px; align-items:center;">
+            <img src="/assets/img/GalileuLogo.png" alt="Logo" style="width:110px; border-radius:12px;">
+            <div>
+              <p style="margin:0;"><b>Nome:</b> Galileu Robotics</p>
+              <p style="margin:6px 0 0 0;"><b>Criado em:</b> 23/03/2003</p>
+              <p style="margin:6px 0 0 0;"><b>Slogan:</b> Café para os humanos, código para as máquinas.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="row2">
+          <div class="card">
+            <h3 style="margin:0 0 10px 0;">Membros</h3>
+            <ul class="list" id="members-list">
+              <li><span>Guilherme Nobre</span><span>—</span></li>
+              <li><span>Fernanda Gomes</span><span>—</span></li>
+            </ul>
+
+            <div style="margin-top:12px; display:flex; flex-direction:column; gap:10px;">
+              <input id="member-name" class="input" placeholder="Nome do membro" />
+              <button id="add-member" class="btn-black" type="button">Adicionar membro</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3 style="margin:0 0 10px 0;">Robôs</h3>
+            <ul class="list" id="robots-list">
+              <li><span>Robô 1</span><span>—</span></li>
+              <li><span>Robô 2</span><span>—</span></li>
+            </ul>
+
+            <div style="margin-top:12px; display:flex; flex-direction:column; gap:10px;">
+              <input id="robot-name" class="input" placeholder="Nome do robô" />
+              <button id="add-robot" class="btn-black" type="button">Adicionar robô</button>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   </main>
 
-  <!-- Scripts -->
   <script src="/config.js"></script>
-  <script src="/js/api.js"></script>
-  <script src="/js/auth.js"></script>
   <script src="/js/navbar.js"></script>
   <script src="/js/minha-equipe.page.js"></script>
 </body>
