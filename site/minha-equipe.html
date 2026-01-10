@@ -2,273 +2,135 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Minha Equipe</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Exo+2:wght@700;800&family=Lato:wght@400;700&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Exo+2:wght@700;800&family=Lato:wght@400;700&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="/css/style.css">
-  <link rel="stylesheet" href="/css/equipe.css">
+  <!-- Se você tiver um CSS específico pra essa página, pode manter aqui -->
+  <!-- <link rel="stylesheet" href="/css/minha-equipe.css"> -->
 
   <style>
-    /* menu hamburger simples (não quebra seu CSS atual) */
-    .user-menu {
-      position: relative;
-      display: inline-block;
-    }
-    #hamburger {
-      display: none;
-      cursor: pointer;
-      border: 0;
-      background: transparent;
-      font-size: 26px;
-      line-height: 1;
-      color: #fff;
-      padding: 8px 10px;
-      border-radius: 10px;
-    }
-    #hamburger:hover {
+    /* Só pro hamburger e menu não ficarem “crus” */
+    .nav-right { display:flex; align-items:center; gap:12px; }
+
+    .hamburger-btn{
+      width:44px; height:44px;
+      display:none;
+      align-items:center; justify-content:center;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,.25);
       background: rgba(255,255,255,.08);
+      color:#fff;
+      cursor:pointer;
+      font-size:22px;
+      line-height:1;
     }
-    #menu-user {
-      display: none;
-      position: absolute;
-      right: 0;
-      top: 52px;
-      min-width: 220px;
-      background: #111;
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: 14px;
-      padding: 10px;
-      box-shadow: 0 12px 40px rgba(0,0,0,.35);
-      z-index: 9999;
+    .hamburger-btn:hover{ background: rgba(255,255,255,.14); }
+
+    .user-menu{
+      position:absolute;
+      top:72px;
+      right:24px;
+      min-width:240px;
+      display:none;
+      border-radius:14px;
+      background:#111;
+      border:1px solid rgba(255,255,255,.15);
+      box-shadow: 0 12px 30px rgba(0,0,0,.35);
+      padding:10px;
+      z-index:9999;
     }
-    #menu-user a {
-      display: block;
-      padding: 10px 12px;
-      border-radius: 10px;
-      color: #fff;
-      text-decoration: none;
-      font-family: Lato, Arial, sans-serif;
-      font-size: 14px;
+    .user-menu.open{ display:block; }
+
+    .user-menu .who{
+      padding:10px 10px 8px 10px;
+      border-bottom:1px solid rgba(255,255,255,.12);
+      margin-bottom:8px;
+      color:#fff;
+      font-family:Lato, Arial, sans-serif;
     }
-    #menu-user a:hover {
-      background: rgba(255,255,255,.08);
+    .user-menu .who b{ display:block; font-size:14px; }
+    .user-menu .who small{ opacity:.8; }
+
+    .user-menu a,
+    .user-menu button{
+      width:100%;
+      display:flex;
+      justify-content:flex-start;
+      gap:10px;
+      padding:10px 10px;
+      border-radius:10px;
+      color:#fff;
+      background:transparent;
+      border:none;
+      cursor:pointer;
+      text-decoration:none;
+      font-family:Lato, Arial, sans-serif;
+      font-size:14px;
     }
-    #menu-user-name {
-      padding: 8px 12px 6px 12px;
-      color: rgba(255,255,255,.85);
-      font-family: Lato, Arial, sans-serif;
-      font-size: 13px;
-    }
-    /* badge "logado" opcional em texto na página */
-    .me-pill {
-      display: inline-block;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,123,0,.35);
-      background: rgba(255,123,0,.08);
-      font-family: Lato, Arial, sans-serif;
-      font-size: 13px;
-    }
+    .user-menu a:hover,
+    .user-menu button:hover{ background: rgba(255,255,255,.10); }
+
+    .user-menu .danger{ color:#ffb3b3; }
   </style>
 </head>
 
 <body>
   <header>
-    <nav>
+    <nav style="position:relative;">
       <div class="logo">
-        <a href="/index.html"><img src="./assets/img/GalileuLogo.png" alt="Logo da Galileu Robotics"></a>
+        <a href="/"><img src="/assets/img/GalileuLogo.png" alt="Logo da Galileu Robotics"></a>
       </div>
 
       <ul>
-        <li><a href="eventos.html">Eventos</a></li>
-        <li><a href="blog.html">Blog</a></li>
-        <li><a href="artigo.html">Forum</a></li>
-        <li><a href="sobre.html">Sobre Nós</a></li>
+        <li><a href="/eventos.html">Eventos</a></li>
+        <li><a href="/blog.html">Blog</a></li>
+        <li><a href="/artigo.html">Forum</a></li>
+        <li><a href="/sobre.html">Sobre Nós</a></li>
       </ul>
 
-      <div class="auth-buttons user-menu">
-        <!-- quando DESLOGADO aparece -->
-        <a id="btn-login-nav" href="cadastrar.html" class="btn">
-          <img src="./assets/img/leoLogin.png" alt="LoginLeo">
+      <div class="nav-right">
+        <!-- Botão padrão (quando NÃO logado) -->
+        <a id="btn-login-nav" href="/cadastrar.html" class="btn">
+          <img src="/assets/img/leoLogin.png" alt="LoginLeo">
           <span>LOGIN / CADASTRE-SE</span>
         </a>
 
-        <!-- quando LOGADO aparece -->
-        <button id="hamburger" aria-label="Menu">☰</button>
+        <!-- Hamburger (quando logado) -->
+        <button id="hamburger-btn" class="hamburger-btn" aria-label="Menu" type="button">☰</button>
+      </div>
 
-        <div id="menu-user" data-open="0">
-          <div id="menu-user-name">Conta</div>
-          <a href="/minha-equipe.html">Minha equipe</a>
-          <a id="btn-logout" href="#">Sair</a>
+      <!-- Dropdown do usuário -->
+      <div id="user-menu" class="user-menu" aria-hidden="true">
+        <div class="who">
+          <b id="user-menu-name">Usuário</b>
+          <small id="user-menu-email">email@exemplo.com</small>
         </div>
+
+        <a href="/minha-equipe.html">Minha equipe</a>
+        <a href="/index.html">Home</a>
+        <button id="btn-logout" class="danger" type="button">Sair</button>
       </div>
     </nav>
   </header>
 
   <main>
-    <!-- opcional: só pra você enxergar que puxou o usuário -->
-    <div style="max-width:1200px;margin:12px auto 0 auto;padding:0 12px;">
-      <span class="me-pill">
-        Logado como: <b id="me-name">-</b> (<span id="me-email">-</span>)
-      </span>
+    <!-- SEU CONTEÚDO DA PÁGINA AQUI -->
+    <!-- Mantém como está hoje (cards, inputs, etc). -->
+    <div style="padding: 24px;">
+      <!-- Exemplo: você pode manter seu layout real aqui -->
     </div>
-
-    <!-- =========================
-         SEU CONTEÚDO ORIGINAL
-         (deixa como já está)
-    ========================== -->
-
-    <section class="equipe-page">
-      <div class="container">
-
-        <!-- Coluna esquerda -->
-        <div class="left-col">
-
-          <!-- Card perfil -->
-          <div class="card perfil-card">
-            <div class="perfil-top">
-              <div class="perfil-avatar">
-                <img src="./assets/img/avatar-placeholder.png" alt="Avatar" onerror="this.style.display='none'">
-              </div>
-              <button class="btn-secondary" type="button">Editar foto</button>
-            </div>
-
-            <div class="perfil-info">
-              <p><b>Email:</b> <span id="perfil-email">-</span></p>
-              <p><b>Nome:</b> <span id="perfil-nome">-</span></p>
-              <p><b>Data de nasc.:</b> <span id="perfil-nasc">-</span></p>
-              <p><b>CPF:</b> <span id="perfil-cpf">-</span></p>
-            </div>
-
-            <div class="perfil-actions">
-              <button class="btn-primary" type="button">★ Capitão</button>
-
-              <!-- IMPORTANTE: id pra logout funcionar MESMO sem hamburger -->
-              <button id="btn-sair" class="btn-secondary" type="button">Sair</button>
-            </div>
-          </div>
-
-          <!-- Nota fiscal (exemplo - mantém seu layout) -->
-          <div class="card nota-card">
-            <h3>NOTA FISCAL</h3>
-            <!-- seu conteúdo aqui -->
-          </div>
-
-        </div>
-
-        <!-- Coluna direita -->
-        <div class="right-col">
-
-          <!-- Card equipe -->
-          <div class="card equipe-card">
-            <div class="equipe-header">
-              <img src="./assets/img/GalileuLogo.png" alt="Logo Equipe" class="equipe-logo">
-              <div class="equipe-meta">
-                <h2>Equipe</h2>
-                <p><b>Nome:</b> Galileu Robotics</p>
-                <p><b>Criado em:</b> 23/03/2003</p>
-                <p><b>Slogan:</b> Café para os humanos, código para as máquinas.</p>
-              </div>
-              <button class="btn-secondary" type="button">Editar foto</button>
-            </div>
-          </div>
-
-          <!-- Membros -->
-          <div class="grid-2">
-            <div class="card membros-card">
-              <h3>Membro</h3>
-              <div class="lista">
-                <div class="linha">Guilherme Nobre</div>
-                <div class="linha">Fernanda Gomes</div>
-              </div>
-              <div class="form-add">
-                <input type="text" placeholder="Nome">
-                <button class="btn-primary" type="button">Adicionar membro</button>
-              </div>
-            </div>
-
-            <div class="card robo-card">
-              <h3>Robô</h3>
-              <div class="lista">
-                <div class="linha">Robô 1</div>
-                <div class="linha">Robô 2</div>
-              </div>
-              <div class="form-add">
-                <input type="text" placeholder="Nome">
-                <button class="btn-primary" type="button">Adicionar robô</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Certificados -->
-          <div class="card cert-card">
-            <h3>Certificados</h3>
-            <!-- seu conteúdo aqui -->
-          </div>
-
-        </div>
-
-      </div>
-    </section>
   </main>
 
-  <footer class="main-footer">
-    <div class="footer-upper"></div>
-    <div class="footer-lower">
-      <div class="container footer-content">
-
-        <div class="footer-column">
-          <div class="footer-title">
-            <h3>Ajuda</h3>
-          </div>
-          <div class="footer-links">
-            <ul>
-              <li><a href="#">Ficou alguma dúvida?</a></li>
-              <li><a href="#">Fale conosco</a></li>
-              <li><a href="#">Compliance</a></li>
-              <li><a href="#">Política de privacidade</a></li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="footer-column">
-          <div class="footer-title">
-            <h3>Redes Sociais</h3>
-          </div>
-          <div class="footer-social">
-            <a href="https://www.instagram.com/galileurobotics">
-              <img src="./assets/img/iconeInsta.png" alt="Instagram">
-            </a>
-            <a href="https://www.linkedin.com/company/galileu-robotics/?viewAsMember=true">
-              <img src="./assets/img/iconeLinkedin.png" alt="linkedIn">
-            </a>
-            <a href="#">
-              <img src="./assets/img/iconeYT.png" alt="YouTube">
-            </a>
-          </div>
-        </div>
-
-      </div>
-      <div class="container footer-copyright-container">
-        <div class="footer-copyright">
-          <p><small>&copy; 2025 Galileu Robotics - todos os direitos reservados</small></p>
-        </div>
-      </div>
-
-    </div>
-  </footer>
-
-  <!-- ORDEM IMPORTA -->
-  <script src="config.js"></script>
-  <script src="js/api.js"></script>
-  <script src="js/auth.js"></script>
-  <script src="js/main.js"></script>
-  <script src="js/minha-equipe.page.js"></script>
+  <!-- Scripts -->
+  <script src="/config.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/navbar.js"></script>
+  <script src="/js/minha-equipe.page.js"></script>
 </body>
 </html>
