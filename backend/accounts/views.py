@@ -82,3 +82,6 @@ def logout_view(request):
 
     logout(request)
     return JsonResponse({"ok": True})
+
+def healthcheck(request):
+    return JsonResponse({"status": "ok"})
