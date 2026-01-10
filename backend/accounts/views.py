@@ -3,12 +3,19 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
-from django.contrib.auth import login as django_login
-from django.contrib.auth import logout as django_logout
+from django.contrib.auth import login as dj_login
+from django.contrib.auth import logout as dj_logout
 
 
 def healthcheck(request):
-    return JsonResponse({"status": "ok"})
+    return JsonResponse({"ok": True, "service": "auth"})
+
+
+def _json_body(request):
+    try:
+        return json.loads(request.body.decode("utf-8") or "{}")
+    except Exception:
+        return None
 
 
 @csrf_exempt
@@ -16,9 +23,8 @@ def register(request):
     if request.method != "POST":
         return JsonResponse({"detail": "Method not allowed"}, status=405)
 
-    try:
-        data = json.loads(request.body.decode("utf-8") or "{}")
-    except Exception:
+    data = _json_body(request)
+    if data is None:
         return JsonResponse({"detail": "Invalid JSON"}, status=400)
 
     email = (data.get("email") or "").strip().lower()
@@ -34,15 +40,14 @@ def register(request):
     if User.objects.filter(username=email).exists():
         return JsonResponse({"detail": "Email já cadastrado"}, status=409)
 
-    # senha já fica CRIPTOGRAFADA no BD pelo Django (hash)
     user = User.objects.create_user(
         username=email,
         email=email,
-        password=password,
+        password=password,     # -> Django salva HASH no DB
         first_name=name[:150],
     )
 
-    return JsonResponse({"ok": True, "id": user.id, "email": user.email, "name": user.first_name})
+    return JsonResponse({"ok": True, "id": user.id, "email": user.email})
 
 
 @csrf_exempt
@@ -50,9 +55,8 @@ def login_view(request):
     if request.method != "POST":
         return JsonResponse({"detail": "Method not allowed"}, status=405)
 
-    try:
-        data = json.loads(request.body.decode("utf-8") or "{}")
-    except Exception:
+    data = _json_body(request)
+    if data is None:
         return JsonResponse({"detail": "Invalid JSON"}, status=400)
 
     email = (data.get("email") or "").strip().lower()
@@ -62,7 +66,7 @@ def login_view(request):
     if user is None:
         return JsonResponse({"detail": "Credenciais inválidas"}, status=401)
 
-    django_login(request, user)
+    dj_login(request, user)
     return JsonResponse({"ok": True, "email": user.email, "name": user.first_name})
 
 
@@ -82,5 +86,5 @@ def logout_view(request):
     if request.method != "POST":
         return JsonResponse({"detail": "Method not allowed"}, status=405)
 
-    django_logout(request)
+    dj_logout(request)
     return JsonResponse({"ok": True})
