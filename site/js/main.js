@@ -1,105 +1,64 @@
 // site/js/main.js
-// Lógica GLOBAL do site: navbar + sessão + logout + proteção de páginas
-
-function $(id) {
-  return document.getElementById(id);
-}
-
-function isProtectedPage() {
-  // coloque aqui as páginas que só podem abrir logado:
-  const protectedPages = ["minha-equipe.html"];
-  const current = (location.pathname.split("/").pop() || "").toLowerCase();
-  return protectedPages.includes(current);
-}
-
-function renderNavbarLoggedOut() {
-  // Exemplo: mantém o botão LOGIN/CADASTRE-SE
-  const btnLogin = $("btn-login-nav");
-  if (btnLogin) btnLogin.style.display = "inline-flex";
-
-  const authMenu = $("auth-menu");
-  if (authMenu) authMenu.remove();
-}
-
-function renderNavbarLoggedIn(user) {
-  // Esconde botão "LOGIN / CADASTRE-SE"
-  const btnLogin = $("btn-login-nav");
-  if (btnLogin) btnLogin.style.display = "none";
-
-  // Cria menu simples autenticado (hamburger)
-  // Você pode estilizar depois no CSS
-  let authMenu = $("auth-menu");
-  if (!authMenu) {
-    authMenu = document.createElement("div");
-    authMenu.id = "auth-menu";
-    authMenu.style.display = "flex";
-    authMenu.style.alignItems = "center";
-    authMenu.style.gap = "10px";
-
-    authMenu.innerHTML = `
-      <button id="hamburger-btn" aria-label="Menu" style="font-size:18px; cursor:pointer;">☰</button>
-      <div id="hamburger-panel" style="
-        display:none;
-        position:absolute;
-        top:70px;
-        right:20px;
-        background:#fff;
-        border:1px solid rgba(0,0,0,.15);
-        border-radius:10px;
-        padding:10px;
-        min-width:180px;
-        z-index:9999;
-      ">
-        <div style="font-family:Lato, Arial; font-size:14px; margin-bottom:8px;">
-          Olá, <b>${(user?.name || "Usuário")}</b>
-        </div>
-        <a href="minha-equipe.html" style="display:block; padding:8px; text-decoration:none;">Minha equipe</a>
-        <button id="logout-btn" style="width:100%; padding:8px; cursor:pointer;">Sair</button>
-      </div>
-    `;
-
-    // coloca dentro do <nav> no final (ajuste se quiser)
-    const nav = document.querySelector("nav");
-    if (nav) nav.appendChild(authMenu);
+(function () {
+  function el(sel) {
+    return document.querySelector(sel);
   }
 
-  // Toggle hamburger
-  const btn = $("hamburger-btn");
-  const panel = $("hamburger-panel");
-  if (btn && panel) {
-    btn.onclick = () => {
-      panel.style.display = panel.style.display === "none" ? "block" : "none";
-    };
-
-    // fecha clicando fora
-    document.addEventListener("click", (e) => {
-      const clickedInside = authMenu.contains(e.target);
-      if (!clickedInside) panel.style.display = "none";
-    });
+  function setVisible(selector, show) {
+    const node = el(selector);
+    if (!node) return;
+    node.style.display = show ? "" : "none";
   }
 
-  // Logout
-  const logoutBtn = $("logout-btn");
-  if (logoutBtn) {
-    logoutBtn.onclick = async () => {
-      try {
-        await Auth.logout();
-      } catch (e) {}
-      // volta pro index
-      location.href = "index.html";
-    };
+  function setText(selector, text) {
+    const node = el(selector);
+    if (!node) return;
+    node.textContent = text;
   }
-}
 
-document.addEventListener("DOMContentLoaded", async () => {
-  try {
-    const me = await Auth.me(); // { authenticated: true, name, email }
-    renderNavbarLoggedIn(me);
-  } catch (err) {
-    renderNavbarLoggedOut();
+  function bindClick(selector, fn) {
+    const node = el(selector);
+    if (!node) return;
+    node.addEventListener("click", fn);
+  }
 
-    if (isProtectedPage()) {
-      location.href = "cadastrar.html";
+  async function bootNavbar() {
+    const me = await window.Auth.me();
+
+    // IDs recomendados no HTML:
+    // #btn-login-nav (botão laranja)
+    // #hamburger (botão menu)
+    // #menu-user (dropdown do usuário)
+    // #menu-user-name (nome do usuário)
+    // #btn-logout (sair)
+
+    if (me && me.authenticated) {
+      setVisible("#btn-login-nav", false);
+      setVisible("#hamburger", true);
+      setVisible("#menu-user", false);
+      setText("#menu-user-name", me.name || me.email || "Conta");
+
+      bindClick("#hamburger", () => {
+        const m = el("#menu-user");
+        if (!m) return;
+        const open = m.getAttribute("data-open") === "1";
+        m.setAttribute("data-open", open ? "0" : "1");
+        m.style.display = open ? "none" : "block";
+      });
+
+      bindClick("#btn-logout", async (ev) => {
+        ev.preventDefault();
+        try {
+          await window.Auth.logout();
+        } catch (_) {}
+        window.location.href = "/index.html";
+      });
+    } else {
+      setVisible("#btn-login-nav", true);
+      setVisible("#hamburger", false);
+      setVisible("#menu-user", false);
     }
   }
-});
+
+  document.addEventListener("DOMContentLoaded", bootNavbar);
+})();

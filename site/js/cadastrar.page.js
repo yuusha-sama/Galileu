@@ -1,78 +1,89 @@
 // site/js/cadastrar.page.js
-
-function showAlert(msg) {
-  const el = document.getElementById("auth-alert");
-  if (!el) return;
-  el.textContent = msg;
-  el.classList.add("show");
-}
-
-function clearAlert() {
-  const el = document.getElementById("auth-alert");
-  if (!el) return;
-  el.textContent = "";
-  el.classList.remove("show");
-}
-
-function safeTrim(v) {
-  return (v || "").toString().trim();
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  // Se já estiver logado, pode mandar direto pra sua página protegida
-  Auth.me()
-    .then(() => {
-      // troque aqui pra sua página real:
-      window.location.href = "minha-equipe.html";
-    })
-    .catch(() => {});
-
-  const loginForm = document.getElementById("login-form");
-  const cadastroForm = document.getElementById("cadastro-form");
-
-  if (cadastroForm) {
-    cadastroForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      clearAlert();
-
-      const email = safeTrim(document.getElementById("cadastro-email")?.value).toLowerCase();
-      const nome = safeTrim(document.getElementById("cadastro-nome")?.value);
-      const senha = document.getElementById("cadastro-senha")?.value || "";
-      const confirmar = document.getElementById("cadastro-confirmar")?.value || "";
-
-      if (!email || !nome) return showAlert("Preencha email e nome.");
-      if (senha.length < 8) return showAlert("A senha deve ter pelo menos 8 caracteres.");
-      if (senha !== confirmar) return showAlert("As senhas não conferem.");
-
-      try {
-        await Auth.register({ email, password: senha, name: nome });
-
-        // opcional: já loga após cadastrar
-        await Auth.login({ email, password: senha });
-
-        window.location.href = "minha-equipe.html";
-      } catch (err) {
-        showAlert(err.message || "Erro ao cadastrar.");
-      }
-    });
+(function () {
+  function showAlert(msg, type = "warn") {
+    const box = document.getElementById("auth-alert");
+    if (!box) return alert(msg);
+    box.textContent = msg;
+    box.classList.add("show");
   }
 
-  if (loginForm) {
-    loginForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      clearAlert();
-
-      const email = safeTrim(document.getElementById("login-email")?.value).toLowerCase();
-      const senha = document.getElementById("login-senha")?.value || "";
-
-      if (!email || !senha) return showAlert("Preencha email e senha.");
-
-      try {
-        await Auth.login({ email, password: senha });
-        window.location.href = "minha-equipe.html";
-      } catch (err) {
-        showAlert(err.message || "Erro ao logar.");
-      }
-    });
+  function hideAlert() {
+    const box = document.getElementById("auth-alert");
+    if (!box) return;
+    box.textContent = "";
+    box.classList.remove("show");
   }
-});
+
+  function onlyDigits(s) {
+    return (s || "").replace(/\D/g, "");
+  }
+
+  function isValidCPF(cpf) {
+    cpf = onlyDigits(cpf);
+    if (cpf.length !== 11) return false;
+    if (/^(\d)\1+$/.test(cpf)) return false;
+
+    let sum = 0;
+    for (let i = 0; i < 9; i++) sum += parseInt(cpf[i]) * (10 - i);
+    let d1 = 11 - (sum % 11);
+    if (d1 >= 10) d1 = 0;
+    if (d1 !== parseInt(cpf[9])) return false;
+
+    sum = 0;
+    for (let i = 0; i < 10; i++) sum += parseInt(cpf[i]) * (11 - i);
+    let d2 = 11 - (sum % 11);
+    if (d2 >= 10) d2 = 0;
+    if (d2 !== parseInt(cpf[10])) return false;
+
+    return true;
+  }
+
+  async function handleRegister(ev) {
+    ev.preventDefault();
+    hideAlert();
+
+    const email = document.getElementById("cadastro-email").value.trim().toLowerCase();
+    const name = document.getElementById("cadastro-nome").value.trim();
+    const cpf = document.getElementById("cadastro-cpf").value.trim();
+    const senha = document.getElementById("cadastro-senha").value;
+    const confirmar = document.getElementById("cadastro-confirmar").value;
+
+    if (!email || !name) return showAlert("Preencha email e nome.");
+    if (!isValidCPF(cpf)) return showAlert("CPF inválido.");
+    if (!senha || senha.length < 8) return showAlert("Senha deve ter pelo menos 8 caracteres.");
+    if (senha !== confirmar) return showAlert("As senhas não coincidem.");
+
+    try {
+      await window.Auth.register({ email, password: senha, name });
+
+      // login automático depois do cadastro
+      await window.Auth.login({ email, password: senha });
+
+      window.location.href = "/minha-equipe.html";
+    } catch (e) {
+      showAlert(e.message || "Erro ao cadastrar.");
+    }
+  }
+
+  async function handleLogin(ev) {
+    ev.preventDefault();
+    hideAlert();
+
+    const email = document.getElementById("login-email").value.trim().toLowerCase();
+    const senha = document.getElementById("login-senha").value;
+
+    if (!email || !senha) return showAlert("Informe email e senha.");
+
+    try {
+      await window.Auth.login({ email, password: senha });
+      window.location.href = "/minha-equipe.html";
+    } catch (e) {
+      showAlert(e.message || "Login inválido.");
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("cadastro-form")?.addEventListener("submit", handleRegister);
+    document.getElementById("login-form")?.addEventListener("submit", handleLogin);
+  });
+})();
