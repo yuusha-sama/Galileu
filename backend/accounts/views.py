@@ -1,67 +1,84 @@
 import json
 from django.http import JsonResponse
-from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth import get_user_model
 
-User = get_user_model()
 
-def _json(request):
+def health(request):
+    return JsonResponse({"ok": True, "service": "auth"})
+
+
+@csrf_exempt
+def register(request):
+    if request.method != "POST":
+        return JsonResponse({"detail": "Method not allowed"}, status=405)
+
     try:
-        return json.loads(request.body.decode("utf-8") or "{}")
+        data = json.loads(request.body.decode("utf-8") or "{}")
     except Exception:
-        return {}
+        return JsonResponse({"detail": "Invalid JSON"}, status=400)
 
-@csrf_exempt
-@require_http_methods(["POST"])
-def register_view(request):
-    data = _json(request)
-    username = (data.get("username") or "").strip()
-    email = (data.get("email") or "").strip()
+    email = (data.get("email") or "").strip().lower()
     password = data.get("password") or ""
-
-    if not username or not email or not password:
-        return JsonResponse({"error": "username, email e password são obrigatórios."}, status=400)
-
-    if User.objects.filter(username__iexact=username).exists():
-        return JsonResponse({"error": "Nome de usuário já existe."}, status=400)
-
-    if User.objects.filter(email__iexact=email).exists():
-        return JsonResponse({"error": "Email já cadastrado."}, status=400)
-
-    # ✅ SENHA VAI COM HASH NO BD
-    user = User.objects.create_user(username=username, email=email, password=password)
-
-    return JsonResponse({"ok": True, "id": user.id, "username": user.username, "email": user.email}, status=201)
-
-@csrf_exempt
-@require_http_methods(["POST"])
-def login_view(request):
-    data = _json(request)
-    email = (data.get("email") or "").strip()
-    password = data.get("password") or ""
+    name = (data.get("name") or "").strip()
 
     if not email or not password:
-        return JsonResponse({"error": "email e password são obrigatórios."}, status=400)
+        return JsonResponse({"detail": "Email e senha são obrigatórios"}, status=400)
 
-    user = authenticate(request, email=email, password=password)
-    if user is None:
-        return JsonResponse({"error": "Credenciais inválidas."}, status=401)
+    if len(password) < 8:
+        return JsonResponse({"detail": "Senha deve ter pelo menos 8 caracteres"}, status=400)
 
-    login(request, user)  # ✅ cria cookie de sessão
-    return JsonResponse({"ok": True, "username": user.username, "email": user.email})
+    if User.objects.filter(username=email).exists():
+        return JsonResponse({"detail": "Email já cadastrado"}, status=409)
+
+    # username = email (simples e evita campo a mais)
+    user = User.objects.create_user(
+        username=email,
+        email=email,
+        password=password,
+        first_name=name[:150],
+    )
+
+    return JsonResponse({"ok": True, "id": user.id, "email": user.email})
+
 
 @csrf_exempt
-@require_http_methods(["POST"])
-def logout_view(request):
-    logout(request)
-    return JsonResponse({"ok": True})
+def login_view(request):
+    if request.method != "POST":
+        return JsonResponse({"detail": "Method not allowed"}, status=405)
 
-@require_http_methods(["GET"])
-def me_view(request):
+    try:
+        data = json.loads(request.body.decode("utf-8") or "{}")
+    except Exception:
+        return JsonResponse({"detail": "Invalid JSON"}, status=400)
+
+    email = (data.get("email") or "").strip().lower()
+    password = data.get("password") or ""
+
+    user = authenticate(request, username=email, password=password)
+    if user is None:
+        return JsonResponse({"detail": "Credenciais inválidas"}, status=401)
+
+    login(request, user)
+    return JsonResponse({"ok": True, "email": user.email, "name": user.first_name})
+
+
+def me(request):
     if not request.user.is_authenticated:
         return JsonResponse({"authenticated": False}, status=401)
 
-    u = request.user
-    return JsonResponse({"authenticated": True, "id": u.id, "username": u.username, "email": u.email})
+    return JsonResponse({
+        "authenticated": True,
+        "email": request.user.email,
+        "name": request.user.first_name,
+    })
+
+
+@csrf_exempt
+def logout_view(request):
+    if request.method != "POST":
+        return JsonResponse({"detail": "Method not allowed"}, status=405)
+
+    logout(request)
+    return JsonResponse({"ok": True})
