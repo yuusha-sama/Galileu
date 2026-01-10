@@ -1,75 +1,105 @@
 // site/js/main.js
+// Lógica GLOBAL do site: navbar + sessão + logout + proteção de páginas
 
-const API_BASE = "/api";
-
-function showAlert(msg) {
-  const el = document.getElementById("auth-alert");
-  if (!el) return;
-  el.textContent = msg;
-  el.classList.add("show");
-  setTimeout(() => el.classList.remove("show"), 4000);
+function $(id) {
+  return document.getElementById(id);
 }
 
-async function apiPost(path, payload) {
-  const res = await fetch(`${API_BASE}${path}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-    credentials: "include", // cookies de sessão
-  });
+function isProtectedPage() {
+  // coloque aqui as páginas que só podem abrir logado:
+  const protectedPages = ["minha-equipe.html"];
+  const current = (location.pathname.split("/").pop() || "").toLowerCase();
+  return protectedPages.includes(current);
+}
 
-  let data = null;
-  try { data = await res.json(); } catch (e) {}
+function renderNavbarLoggedOut() {
+  // Exemplo: mantém o botão LOGIN/CADASTRE-SE
+  const btnLogin = $("btn-login-nav");
+  if (btnLogin) btnLogin.style.display = "inline-flex";
 
-  if (!res.ok) {
-    const detail = data?.detail || `Erro ${res.status}`;
-    throw new Error(detail);
+  const authMenu = $("auth-menu");
+  if (authMenu) authMenu.remove();
+}
+
+function renderNavbarLoggedIn(user) {
+  // Esconde botão "LOGIN / CADASTRE-SE"
+  const btnLogin = $("btn-login-nav");
+  if (btnLogin) btnLogin.style.display = "none";
+
+  // Cria menu simples autenticado (hamburger)
+  // Você pode estilizar depois no CSS
+  let authMenu = $("auth-menu");
+  if (!authMenu) {
+    authMenu = document.createElement("div");
+    authMenu.id = "auth-menu";
+    authMenu.style.display = "flex";
+    authMenu.style.alignItems = "center";
+    authMenu.style.gap = "10px";
+
+    authMenu.innerHTML = `
+      <button id="hamburger-btn" aria-label="Menu" style="font-size:18px; cursor:pointer;">☰</button>
+      <div id="hamburger-panel" style="
+        display:none;
+        position:absolute;
+        top:70px;
+        right:20px;
+        background:#fff;
+        border:1px solid rgba(0,0,0,.15);
+        border-radius:10px;
+        padding:10px;
+        min-width:180px;
+        z-index:9999;
+      ">
+        <div style="font-family:Lato, Arial; font-size:14px; margin-bottom:8px;">
+          Olá, <b>${(user?.name || "Usuário")}</b>
+        </div>
+        <a href="minha-equipe.html" style="display:block; padding:8px; text-decoration:none;">Minha equipe</a>
+        <button id="logout-btn" style="width:100%; padding:8px; cursor:pointer;">Sair</button>
+      </div>
+    `;
+
+    // coloca dentro do <nav> no final (ajuste se quiser)
+    const nav = document.querySelector("nav");
+    if (nav) nav.appendChild(authMenu);
   }
-  return data;
-}
 
-document.addEventListener("DOMContentLoaded", () => {
-  const cadastroForm = document.getElementById("cadastro-form");
-  const loginForm = document.getElementById("login-form");
+  // Toggle hamburger
+  const btn = $("hamburger-btn");
+  const panel = $("hamburger-panel");
+  if (btn && panel) {
+    btn.onclick = () => {
+      panel.style.display = panel.style.display === "none" ? "block" : "none";
+    };
 
-  if (cadastroForm) {
-    cadastroForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const email = document.getElementById("cadastro-email").value.trim();
-      const name = document.getElementById("cadastro-nome").value.trim();
-      const senha = document.getElementById("cadastro-senha").value;
-      const confirmar = document.getElementById("cadastro-confirmar").value;
-
-      if (senha !== confirmar) {
-        showAlert("As senhas não conferem.");
-        return;
-      }
-
-      try {
-        await apiPost("/auth/register/", { email, password: senha, name });
-        showAlert("Cadastro feito! Agora faça login.");
-        cadastroForm.reset();
-      } catch (err) {
-        showAlert(err.message);
-      }
+    // fecha clicando fora
+    document.addEventListener("click", (e) => {
+      const clickedInside = authMenu.contains(e.target);
+      if (!clickedInside) panel.style.display = "none";
     });
   }
 
-  if (loginForm) {
-    loginForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const email = document.getElementById("login-email").value.trim();
-      const senha = document.getElementById("login-senha").value;
-
+  // Logout
+  const logoutBtn = $("logout-btn");
+  if (logoutBtn) {
+    logoutBtn.onclick = async () => {
       try {
-        await apiPost("/auth/login/", { email, password: senha });
-        // depois do login, vai pra Minha Equipe
-        window.location.href = "/minha-equipe.html";
-      } catch (err) {
-        showAlert(err.message);
-      }
-    });
+        await Auth.logout();
+      } catch (e) {}
+      // volta pro index
+      location.href = "index.html";
+    };
+  }
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+  try {
+    const me = await Auth.me(); // { authenticated: true, name, email }
+    renderNavbarLoggedIn(me);
+  } catch (err) {
+    renderNavbarLoggedOut();
+
+    if (isProtectedPage()) {
+      location.href = "cadastrar.html";
+    }
   }
 });
