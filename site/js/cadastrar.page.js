@@ -1,89 +1,124 @@
-// site/js/cadastrar.page.js
 (function () {
-  function showAlert(msg, type = "warn") {
-    const box = document.getElementById("auth-alert");
-    if (!box) return alert(msg);
-    box.textContent = msg;
-    box.classList.add("show");
+  const $ = (id) => document.getElementById(id);
+
+  function showAlert(msg, type = "error") {
+    const el = $("auth-alert");
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.add("show");
+    // se quiser diferenciar cor por tipo, dá pra estilizar via CSS depois
   }
 
-  function hideAlert() {
-    const box = document.getElementById("auth-alert");
-    if (!box) return;
-    box.textContent = "";
-    box.classList.remove("show");
+  function clearAlert() {
+    const el = $("auth-alert");
+    if (!el) return;
+    el.textContent = "";
+    el.classList.remove("show");
   }
 
   function onlyDigits(s) {
     return (s || "").replace(/\D/g, "");
   }
 
-  function isValidCPF(cpf) {
-    cpf = onlyDigits(cpf);
+  // valida CPF de verdade (11 dígitos + dígitos verificadores)
+  function isValidCPF(cpfRaw) {
+    const cpf = onlyDigits(cpfRaw);
     if (cpf.length !== 11) return false;
-    if (/^(\d)\1+$/.test(cpf)) return false;
+    if (/^(\d)\1{10}$/.test(cpf)) return false;
 
     let sum = 0;
-    for (let i = 0; i < 9; i++) sum += parseInt(cpf[i]) * (10 - i);
-    let d1 = 11 - (sum % 11);
-    if (d1 >= 10) d1 = 0;
-    if (d1 !== parseInt(cpf[9])) return false;
+    for (let i = 0; i < 9; i++) sum += parseInt(cpf[i], 10) * (10 - i);
+    let d1 = (sum * 10) % 11;
+    if (d1 === 10) d1 = 0;
+    if (d1 !== parseInt(cpf[9], 10)) return false;
 
     sum = 0;
-    for (let i = 0; i < 10; i++) sum += parseInt(cpf[i]) * (11 - i);
-    let d2 = 11 - (sum % 11);
-    if (d2 >= 10) d2 = 0;
-    if (d2 !== parseInt(cpf[10])) return false;
+    for (let i = 0; i < 10; i++) sum += parseInt(cpf[i], 10) * (11 - i);
+    let d2 = (sum * 10) % 11;
+    if (d2 === 10) d2 = 0;
+    if (d2 !== parseInt(cpf[10], 10)) return false;
 
     return true;
   }
 
-  async function handleRegister(ev) {
+  async function onLoginSubmit(ev) {
     ev.preventDefault();
-    hideAlert();
+    clearAlert();
 
-    const email = document.getElementById("cadastro-email").value.trim().toLowerCase();
-    const name = document.getElementById("cadastro-nome").value.trim();
-    const cpf = document.getElementById("cadastro-cpf").value.trim();
-    const senha = document.getElementById("cadastro-senha").value;
-    const confirmar = document.getElementById("cadastro-confirmar").value;
+    if (!window.GalileuAuth) {
+      showAlert("GalileuAuth não carregou. Confira o <script src='/js/auth.js'> e a ordem dos scripts.");
+      return;
+    }
 
-    if (!email || !name) return showAlert("Preencha email e nome.");
-    if (!isValidCPF(cpf)) return showAlert("CPF inválido.");
-    if (!senha || senha.length < 8) return showAlert("Senha deve ter pelo menos 8 caracteres.");
-    if (senha !== confirmar) return showAlert("As senhas não coincidem.");
+    const email = ($("login-email")?.value || "").trim().toLowerCase();
+    const password = $("login-senha")?.value || "";
 
     try {
-      await window.Auth.register({ email, password: senha, name });
-
-      // login automático depois do cadastro
-      await window.Auth.login({ email, password: senha });
-
+      await window.GalileuAuth.login({ email, password });
+      // logou -> vai pra minha equipe
       window.location.href = "/minha-equipe.html";
-    } catch (e) {
-      showAlert(e.message || "Erro ao cadastrar.");
+    } catch (err) {
+      showAlert(err.message || "Erro ao logar");
     }
   }
 
-  async function handleLogin(ev) {
+  async function onRegisterSubmit(ev) {
     ev.preventDefault();
-    hideAlert();
+    clearAlert();
 
-    const email = document.getElementById("login-email").value.trim().toLowerCase();
-    const senha = document.getElementById("login-senha").value;
+    if (!window.GalileuAuth) {
+      showAlert("GalileuAuth não carregou. Confira o <script src='/js/auth.js'> e a ordem dos scripts.");
+      return;
+    }
 
-    if (!email || !senha) return showAlert("Informe email e senha.");
+    const email = ($("cadastro-email")?.value || "").trim().toLowerCase();
+    const name = ($("cadastro-nome")?.value || "").trim();
+    const nascimento = $("cadastro-nascimento")?.value || "";
+    const cpf = $("cadastro-cpf")?.value || "";
+    const telefone = $("cadastro-telefone")?.value || "";
+    const senha = $("cadastro-senha")?.value || "";
+    const confirmar = $("cadastro-confirmar")?.value || "";
 
+    if (!email || !name) {
+      showAlert("Preencha email e nome.");
+      return;
+    }
+
+    if (senha.length < 8) {
+      showAlert("A senha deve ter pelo menos 8 caracteres.");
+      return;
+    }
+
+    if (senha !== confirmar) {
+      showAlert("As senhas não conferem.");
+      return;
+    }
+
+    if (!isValidCPF(cpf)) {
+      showAlert("CPF inválido.");
+      return;
+    }
+
+    // OBS: backend ainda só salva email/nome/senha.
+    // cpf/telefone/nascimento ficam validados no front por enquanto.
     try {
-      await window.Auth.login({ email, password: senha });
-      window.location.href = "/minha-equipe.html";
-    } catch (e) {
-      showAlert(e.message || "Login inválido.");
+      await window.GalileuAuth.register({ email, password: senha, name });
+
+      showAlert("Conta criada! Agora faça login.", "success");
+
+      // joga o email pro login e dá foco na senha
+      if ($("login-email")) $("login-email").value = email;
+      $("login-senha")?.focus();
+    } catch (err) {
+      showAlert(err.message || "Erro ao cadastrar");
     }
   }
 
   document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("cadastro-form")?.addEventListener("submit", handleRegister);
-    document.getElementById("login-form")?.addEventListener("submit", handleLogin);
+    const loginForm = $("login-form");
+    const cadastroForm = $("cadastro-form");
+
+    if (loginForm) loginForm.addEventListener("submit", onLoginSubmit);
+    if (cadastroForm) cadastroForm.addEventListener("submit", onRegisterSubmit);
   });
 })();
