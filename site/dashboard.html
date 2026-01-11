@@ -1,21 +1,17 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dashboard - Galileu</title>
-  <link rel="stylesheet" href="/style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <meta http-equiv="refresh" content="0;url=/minha-equipe.html">
 </head>
 <body>
-  <main style="max-width: 900px; margin: 40px auto; padding: 0 16px;">
-    <h1>Dashboard</h1>
-    <p id="user-box">Carregando...</p>
-    <button id="btn-logout" style="margin-top: 16px;">Sair</button>
-  </main>
-
-  <script src="config.js"></script>
-  <script src="js/api.js"></script>
-  <script src="js/auth.js"></script>
-  <script src="js/dashboard.page.js"></script>
+  <script>
+    location.replace("/minha-equipe.html" + location.search + location.hash);
+  </script>
+  <noscript>
+    <p>Redirecionando… <a href="/minha-equipe.html">clique aqui</a>.</p>
+  </noscript>
 </body>
 </html>

@@ -92,3 +92,21 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 SESSION_COOKIE_HTTPONLY = True
 CSRF_COOKIE_HTTPONLY = False
 CSRF_TRUSTED_ORIGINS = [f"http://{h}" for h in ALLOWED_HOSTS if h != "*"] + [f"https://{h}" for h in ALLOWED_HOSTS if h != "*"]
+
+# Hosts permitidos vindo do .env
+ALLOWED_HOSTS = [h.strip() for h in os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",") if h.strip()]
+
+# Mantém sessão válida entre www e sem-www (em HTTP também)
+COOKIE_DOMAIN = os.getenv("COOKIE_DOMAIN", "").strip()
+
+if COOKIE_DOMAIN:
+    SESSION_COOKIE_DOMAIN = COOKIE_DOMAIN
+    CSRF_COOKIE_DOMAIN = COOKIE_DOMAIN
+
+# Como você está em HTTP agora (sem SSL), deixa False.
+# Quando colocar HTTPS, muda pra True.
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
+
+SESSION_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_SAMESITE = "Lax"

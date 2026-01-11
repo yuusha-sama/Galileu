@@ -17,23 +17,44 @@
 
 <body>
 
+    
     <header>
         <nav>
             <div class="logo">
-                <a href="index.html"><img src="./assets/img/GalileuLogo.png" alt="Logo da Galileu Robotics"></a>
+                <a href="/index.html"><img src="/assets/img/GalileuLogo.png" alt="Logo da Galileu Robotics"></a>
             </div>
-            <ul>
-                <li><a href="eventos.html">Eventos</a></li>
-                <li><a href="blog.html">Blog</a></li>
-                <li><a href="artigo.html">Forum</a></li>
-                <li><a href="sobre.html">Sobre Nós</a></li>
+
+            <button class="hamburger" id="hamburger-btn" type="button" aria-label="Abrir menu" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
+
+            <ul class="nav-links" id="nav-links">
+                <li><a href="/eventos.html">Eventos</a></li>
+                <li><a href="/blog.html">Blog</a></li>
+                <li><a href="/artigo.html">Forum</a></li>
+                <li><a href="/sobre.html">Sobre Nós</a></li>
             </ul>
-            <div class="auth-buttons">
-                <a href="cadastrar.html" class="btn"><img src="./assets/img/leoLogin.png" alt="LoginLeo"> LOGIN /
-                    CADASTRE-SE</a>
+
+            <div class="auth-buttons" id="auth-area">
+                <a id="btn-login-nav" href="/cadastrar.html" class="btn">
+                    <img src="/assets/img/leoLogin.png" alt="LoginLeo">
+                    <span>LOGIN / CADASTRE-SE</span>
+                </a>
+            </div>
+
+            <div class="user-menu" id="user-menu" hidden>
+                <button class="user-menu-btn" id="user-menu-btn" type="button" aria-haspopup="true" aria-expanded="false">
+                    <span class="user-name" id="user-name">Conta</span>
+                    <span class="chev">▾</span>
+                </button>
+                <div class="user-menu-dropdown" id="user-menu-dropdown" hidden>
+                    <a href="/minha-equipe.html">Minha equipe</a>
+                    <button type="button" id="btn-logout">Sair</button>
+                </div>
             </div>
         </nav>
     </header>
+
 
     <main>
         <section class="events-hero-carousel">
@@ -143,13 +164,13 @@
                     </div>
                     <div class="footer-social">
                         <a href="https://www.instagram.com/galileurobotics">
-                            <img src="./assets/img/iconeInsta.png" alt="Instagram">
+                            <img src="/assets/img/iconeInsta.png" alt="Instagram">
                         </a>
                         <a href="https://www.linkedin.com/company/galileu-robotics/?viewAsMember=true">
-                            <img src="./assets/img/iconeLinkedin.png" alt="linkedIn">
+                            <img src="/assets/img/iconeLinkedin.png" alt="linkedIn">
                         </a>
-                        <a href="https://www.youtube.com/@GalileuRobotics">
-                            <img src="./assets/img/iconeYT.png" alt="YouTube">
+                        <a href="#">
+                            <img src="/assets/img/iconeYT.png" alt="YouTube">
                         </a>
                     </div>
                 </div>
@@ -164,8 +185,10 @@
         </div>
     </footer>
 
-    <script src="js/main.js"></script>
-
+    <script src="/config.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/navbar.js"></script>
+    <script src="/js/main.js"></script>
 </body>
 
 </html>

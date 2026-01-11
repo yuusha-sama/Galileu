@@ -1,21 +1,13 @@
 import json
+
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate
-from django.contrib.auth import login as dj_login
-from django.contrib.auth import logout as dj_logout
+from django.contrib.auth import authenticate, login as dj_login, logout as dj_logout
 
 
 def healthcheck(request):
-    return JsonResponse({"ok": True, "service": "auth"})
-
-
-def _json_body(request):
-    try:
-        return json.loads(request.body.decode("utf-8") or "{}")
-    except Exception:
-        return None
+    return JsonResponse({"status": "ok"})
 
 
 @csrf_exempt
@@ -23,16 +15,17 @@ def register(request):
     if request.method != "POST":
         return JsonResponse({"detail": "Method not allowed"}, status=405)
 
-    data = _json_body(request)
-    if data is None:
+    try:
+        data = json.loads(request.body.decode("utf-8") or "{}")
+    except Exception:
         return JsonResponse({"detail": "Invalid JSON"}, status=400)
 
     email = (data.get("email") or "").strip().lower()
     password = data.get("password") or ""
     name = (data.get("name") or "").strip()
 
-    if not email or not password:
-        return JsonResponse({"detail": "Email e senha são obrigatórios"}, status=400)
+    if not email or not password or not name:
+        return JsonResponse({"detail": "Email, nome e senha são obrigatórios"}, status=400)
 
     if len(password) < 8:
         return JsonResponse({"detail": "Senha deve ter pelo menos 8 caracteres"}, status=400)
@@ -43,11 +36,11 @@ def register(request):
     user = User.objects.create_user(
         username=email,
         email=email,
-        password=password,     # -> Django salva HASH no DB
+        password=password,  # hash no BD
         first_name=name[:150],
     )
 
-    return JsonResponse({"ok": True, "id": user.id, "email": user.email})
+    return JsonResponse({"ok": True, "id": user.id, "email": user.email, "name": user.first_name})
 
 
 @csrf_exempt
@@ -55,8 +48,9 @@ def login_view(request):
     if request.method != "POST":
         return JsonResponse({"detail": "Method not allowed"}, status=405)
 
-    data = _json_body(request)
-    if data is None:
+    try:
+        data = json.loads(request.body.decode("utf-8") or "{}")
+    except Exception:
         return JsonResponse({"detail": "Invalid JSON"}, status=400)
 
     email = (data.get("email") or "").strip().lower()

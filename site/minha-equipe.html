@@ -3,290 +3,156 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Minha Equipe - Galileu</title>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Exo+2:wght@700;800&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+  <title>Minha Equipe - Galileu Robotics</title>
 
   <link rel="stylesheet" href="/css/style.css">
-
-  <style>
-    .nav-right { display:flex; align-items:center; gap:12px; }
-
-    .hamburger-btn{
-      width:44px; height:44px;
-      display:none;
-      align-items:center; justify-content:center;
-      border-radius:10px;
-      border:1px solid rgba(255,255,255,.25);
-      background: rgba(255,255,255,.08);
-      color:#fff;
-      cursor:pointer;
-      font-size:22px;
-      line-height:1;
-    }
-    .hamburger-btn:hover{ background: rgba(255,255,255,.14); }
-
-    .user-menu{
-      position:absolute;
-      top:72px;
-      right:24px;
-      min-width:240px;
-      display:none;
-      border-radius:14px;
-      background:#111;
-      border:1px solid rgba(255,255,255,.15);
-      box-shadow: 0 12px 30px rgba(0,0,0,.35);
-      padding:10px;
-      z-index:9999;
-    }
-    .user-menu.open{ display:block; }
-
-    .user-menu .who{
-      padding:10px 10px 8px 10px;
-      border-bottom:1px solid rgba(255,255,255,.12);
-      margin-bottom:8px;
-      color:#fff;
-      font-family:Lato, Arial, sans-serif;
-    }
-    .user-menu .who b{ display:block; font-size:14px; }
-    .user-menu .who small{ opacity:.8; }
-
-    .user-menu a,
-    .user-menu button{
-      width:100%;
-      display:flex;
-      justify-content:flex-start;
-      gap:10px;
-      padding:10px 10px;
-      border-radius:10px;
-      color:#fff;
-      background:transparent;
-      border:none;
-      cursor:pointer;
-      text-decoration:none;
-      font-family:Lato, Arial, sans-serif;
-      font-size:14px;
-    }
-    .user-menu a:hover,
-    .user-menu button:hover{ background: rgba(255,255,255,.10); }
-    .user-menu .danger{ color:#ffb3b3; }
-
-    /* Conteúdo da página */
-    .page-wrap{
-      max-width:1200px;
-      margin: 24px auto;
-      padding: 0 16px;
-      font-family: Lato, Arial, sans-serif;
-    }
-
-    .grid{
-      display:grid;
-      grid-template-columns: 320px 1fr;
-      gap:16px;
-    }
-
-    .card{
-      border:2px solid #ff7b00;
-      border-radius:16px;
-      background:#fff;
-      padding:16px;
-    }
-
-    .profile-top{
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      gap:10px;
-    }
-
-    .avatar{
-      width:140px; height:140px;
-      border-radius:18px;
-      border:2px solid rgba(0,0,0,.08);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      overflow:hidden;
-      background:#f5f5f5;
-    }
-
-    .avatar img{ width:100%; height:100%; object-fit:cover; }
-
-    .btn-black{
-      width:100%;
-      border:none;
-      background:#111;
-      color:#fff;
-      padding:10px 12px;
-      border-radius:999px;
-      cursor:pointer;
-      font-weight:700;
-    }
-
-    .btn-orange{
-      border:none;
-      background:#ff7b00;
-      color:#fff;
-      padding:10px 12px;
-      border-radius:999px;
-      cursor:pointer;
-      font-weight:700;
-    }
-
-    .kv{
-      width:100%;
-      margin-top:10px;
-      font-size:14px;
-    }
-    .kv p{ margin:6px 0; }
-
-    .row2{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:16px;
-      margin-top:16px;
-    }
-
-    .list{
-      margin:10px 0 0 0;
-      padding:0;
-      list-style:none;
-      border-top:1px solid rgba(0,0,0,.08);
-    }
-    .list li{
-      padding:10px 0;
-      border-bottom:1px solid rgba(0,0,0,.08);
-      display:flex;
-      justify-content:space-between;
-      gap:12px;
-    }
-
-    .input{
-      width:100%;
-      border:1px solid rgba(0,0,0,.20);
-      border-radius:999px;
-      padding:10px 12px;
-      outline:none;
-    }
-
-    @media(max-width: 980px){
-      .grid{ grid-template-columns: 1fr; }
-      .row2{ grid-template-columns: 1fr; }
-    }
-  </style>
+  <link rel="stylesheet" href="/css/equipe.css">
 </head>
 
 <body>
-  <header>
-    <nav style="position:relative;">
-      <div class="logo">
-        <a href="/"><img src="/assets/img/GalileuLogo.png" alt="Logo da Galileu Robotics"></a>
-      </div>
 
-      <ul>
-        <li><a href="/eventos.html">Eventos</a></li>
-        <li><a href="/blog.html">Blog</a></li>
-        <li><a href="/artigo.html">Forum</a></li>
-        <li><a href="/sobre.html">Sobre Nós</a></li>
-      </ul>
-
-      <div class="nav-right">
-        <a id="btn-login-nav" href="/cadastrar.html" class="btn">
-          <img src="/assets/img/leoLogin.png" alt="LoginLeo">
-          <span>LOGIN / CADASTRE-SE</span>
-        </a>
-
-        <button id="hamburger-btn" class="hamburger-btn" aria-label="Menu" type="button">☰</button>
-      </div>
-
-      <div id="user-menu" class="user-menu" aria-hidden="true">
-        <div class="who">
-          <b id="user-menu-name">Usuário</b>
-          <small id="user-menu-email">email@exemplo.com</small>
-        </div>
-
-        <a href="/minha-equipe.html">Minha equipe</a>
-        <a href="/index.html">Home</a>
-        <button id="btn-logout" class="danger" type="button">Sair</button>
-      </div>
-    </nav>
-  </header>
-
-  <main class="page-wrap">
-    <div class="grid">
-      <!-- Perfil -->
-      <section class="card">
-        <div class="profile-top">
-          <div class="avatar">
-            <img src="/assets/img/leoLogin.png" alt="Avatar">
-          </div>
-
-          <button class="btn-black" type="button">Editar foto</button>
-        </div>
-
-        <div class="kv">
-          <p><b>Email:</b> <span id="me-email">-</span></p>
-          <p><b>Nome:</b> <span id="me-name">-</span></p>
-          <p><b>Data de nasc.:</b> <span id="me-birth">-</span></p>
-          <p><b>CPF:</b> <span id="me-cpf">-</span></p>
-        </div>
-
-        <div style="display:flex; gap:10px; margin-top:12px;">
-          <button class="btn-orange" type="button">★ Capitão</button>
-          <button id="btn-logout-local" class="btn-black" type="button" style="max-width:140px;">Sair</button>
-        </div>
-      </section>
-
-      <!-- Conteúdo -->
-      <section>
-        <div class="card">
-          <h2 style="margin:0 0 10px 0;">Equipe</h2>
-
-          <div style="display:flex; gap:14px; align-items:center;">
-            <img src="/assets/img/GalileuLogo.png" alt="Logo" style="width:110px; border-radius:12px;">
-            <div>
-              <p style="margin:0;"><b>Nome:</b> Galileu Robotics</p>
-              <p style="margin:6px 0 0 0;"><b>Criado em:</b> 23/03/2003</p>
-              <p style="margin:6px 0 0 0;"><b>Slogan:</b> Café para os humanos, código para as máquinas.</p>
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="/index.html"><img src="/assets/img/GalileuLogo.png" alt="Logo da Galileu Robotics"></a>
             </div>
-          </div>
-        </div>
 
-        <div class="row2">
-          <div class="card">
-            <h3 style="margin:0 0 10px 0;">Membros</h3>
-            <ul class="list" id="members-list">
-              <li><span>Guilherme Nobre</span><span>—</span></li>
-              <li><span>Fernanda Gomes</span><span>—</span></li>
+            <button class="hamburger" id="hamburger-btn" type="button" aria-label="Abrir menu" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
+
+            <ul class="nav-links" id="nav-links">
+                <li><a href="/eventos.html">Eventos</a></li>
+                <li><a href="/blog.html">Blog</a></li>
+                <li><a href="/artigo.html">Forum</a></li>
+                <li><a href="/sobre.html">Sobre Nós</a></li>
             </ul>
 
-            <div style="margin-top:12px; display:flex; flex-direction:column; gap:10px;">
-              <input id="member-name" class="input" placeholder="Nome do membro" />
-              <button id="add-member" class="btn-black" type="button">Adicionar membro</button>
+            <div class="auth-buttons" id="auth-area">
+                <a id="btn-login-nav" href="/cadastrar.html" class="btn">
+                    <img src="/assets/img/leoLogin.png" alt="LoginLeo">
+                    <span>LOGIN / CADASTRE-SE</span>
+                </a>
             </div>
-          </div>
 
-          <div class="card">
-            <h3 style="margin:0 0 10px 0;">Robôs</h3>
-            <ul class="list" id="robots-list">
-              <li><span>Robô 1</span><span>—</span></li>
-              <li><span>Robô 2</span><span>—</span></li>
-            </ul>
-
-            <div style="margin-top:12px; display:flex; flex-direction:column; gap:10px;">
-              <input id="robot-name" class="input" placeholder="Nome do robô" />
-              <button id="add-robot" class="btn-black" type="button">Adicionar robô</button>
+            <div class="user-menu" id="user-menu" hidden>
+                <button class="user-menu-btn" id="user-menu-btn" type="button" aria-haspopup="true" aria-expanded="false">
+                    <span class="user-name" id="user-name">Conta</span>
+                    <span class="chev">▾</span>
+                </button>
+                <div class="user-menu-dropdown" id="user-menu-dropdown" hidden>
+                    <a href="/minha-equipe.html">Minha equipe</a>
+                    <button type="button" id="btn-logout">Sair</button>
+                </div>
             </div>
-          </div>
-        </div>
-      </section>
+        </nav>
+    </header>
+
+
+<main class="dashboard-container">
+  <div class="col-esquerda">
+    <div class="card perfil-card">
+      <div class="foto-container">
+        <img src="/assets/img/leoLogin.png" alt="Foto Perfil">
+      </div>
+      <button class="btn-preto-pequeno" type="button">Editar foto</button>
+
+      <div class="info-texto">
+        <p><strong>Email:</strong> <span id="me-email">-</span></p>
+        <p><strong>Nome:</strong> <span id="me-nome">-</span></p>
+        <p><strong>Data de nasc:</strong> <span id="me-nascimento">-</span></p>
+        <p><strong>CPF:</strong> <span id="me-cpf">-</span></p>
+      </div>
+
+      <div style="display:flex; gap:10px; justify-content:space-between; align-items:center; margin-top:10px;">
+        <div class="badge-capitao">★ Capitão</div>
+        <button id="btn-sair" class="btn-preto-pequeno" type="button">Sair</button>
+      </div>
     </div>
-  </main>
 
-  <script src="/config.js"></script>
-  <script src="/js/navbar.js"></script>
-  <script src="/js/minha-equipe.page.js"></script>
+    <div class="card nf-card">
+      <h3>NOTA FISCAL</h3>
+      <div class="radio-group">
+        <label><input type="radio" name="tipo_pessoa" checked> Pessoa Física</label>
+        <label><input type="radio" name="tipo_pessoa"> Pessoa Jurídica</label>
+      </div>
+
+      <form>
+        <input type="text" placeholder="Digite o CNPJ/CPF">
+        <input type="text" placeholder="Razão Social">
+        <input type="text" placeholder="Endereço">
+        <input type="text" placeholder="Telefone">
+        <input type="email" placeholder="E-mail">
+        <button class="btn-laranja-full" type="button">Solicitar nota</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="col-centro">
+    <div class="card equipe-header">
+      <div class="logo-equipe">
+        <img src="/assets/img/GalileuLogo.png" alt="Logo Equipe">
+      </div>
+
+      <div class="equipe-info">
+        <h2>Equipe</h2>
+        <p><strong>Nome:</strong> Galileu Robotics</p>
+        <p><strong>Criado em:</strong> 23/03/2003</p>
+        <p><strong>Slogan:</strong> Café para os humanos, código para as máquinas.</p>
+      </div>
+
+      <button class="btn-preto-pequeno" type="button">Editar foto</button>
+    </div>
+
+    <div class="listas-container">
+      <div class="card lista-card">
+        <h3>Membro</h3>
+        <ul class="scroll-list">
+          <li>Guilherme Nobre</li>
+          <li>Fernanda Gomes</li>
+        </ul>
+
+        <div class="add-box">
+          <input type="text" placeholder="Nome">
+          <button class="btn-preto-full" type="button">Adicionar membro</button>
+        </div>
+      </div>
+
+      <div class="card lista-card">
+        <h3>Robô</h3>
+        <ul class="scroll-list">
+          <li>Robô 1</li>
+          <li>Robô 2</li>
+        </ul>
+
+        <div class="add-box">
+          <input type="text" placeholder="Nome">
+          <button class="btn-preto-full" type="button">Adicionar robô</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card certificados-card">
+      <h3>Certificados</h3>
+      <ul class="cert-list">
+        <li>
+          <span>RIW (Rio Innovation Week 2025)</span>
+          <div class="cert-btns">
+            <button class="btn-preto-mini" type="button">Download</button>
+            <button class="btn-preto-mini" type="button">Enviar email</button>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</main>
+
+<!-- ORDEM CERTA -->
+<script src="/js/api.js"></script>
+
+    <script src="/config.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/navbar.js"></script>
+    <script src="/js/minha-equipe.page.js"></script>
 </body>
 </html>

@@ -1,3 +1,3 @@
-window.GALILEU_CONFIG = {
-  API_BASE: "/api",
+window.GALILEU_CONFIG = window.GALILEU_CONFIG || {
+  AUTH_BASE: "/api/auth"
 };
