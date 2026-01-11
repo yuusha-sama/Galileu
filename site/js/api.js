@@ -1,14 +1,14 @@
-// site/js/api.js
-(function () {
-  const BASE = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || "/api";
+const Api = {
+  base() {
+    return (window.GALILEU_CONFIG && window.GALILEU_CONFIG.API_BASE) ? window.GALILEU_CONFIG.API_BASE : "";
+  },
 
-  async function request(path, { method = "GET", body = null, headers = {} } = {}) {
+  async request(path, { method = "GET", body = null, headers = {} } = {}) {
+    const url = `${this.base()}${path}`;
     const opts = {
       method,
+      headers: { ...headers },
       credentials: "include",
-      headers: {
-        ...headers,
-      },
     };
 
     if (body !== null) {
@@ -16,32 +16,24 @@
       opts.body = JSON.stringify(body);
     }
 
-    const res = await fetch(`${BASE}${path}`, opts);
+    const res = await fetch(url, opts);
+    const ct = (res.headers.get("content-type") || "").toLowerCase();
+    const raw = await res.text();
 
-    let data = null;
-    const ct = res.headers.get("content-type") || "";
+    let data = raw;
     if (ct.includes("application/json")) {
-      data = await res.json().catch(() => null);
+      try { data = raw ? JSON.parse(raw) : {}; } catch { data = { detail: raw }; }
     } else {
-      data = await res.text().catch(() => null);
+      data = { detail: raw };
     }
 
     if (!res.ok) {
-      const msg =
-        (data && data.detail) ||
-        (typeof data === "string" && data) ||
-        `Erro ${res.status}`;
-      const err = new Error(msg);
+      const err = new Error((data && data.detail) ? data.detail : "Erro na requisição");
       err.status = res.status;
       err.data = data;
       throw err;
     }
 
     return data;
-  }
-
-  window.API = {
-    get: (p) => request(p),
-    post: (p, b) => request(p, { method: "POST", body: b }),
-  };
-})();
+  },
+};

@@ -1,4 +1,3 @@
-// site/config.js
-window.APP_CONFIG = {
+window.GALILEU_CONFIG = {
   API_BASE: "/api",
 };
