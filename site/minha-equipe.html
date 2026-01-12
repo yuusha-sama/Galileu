@@ -26,7 +26,6 @@
 
     <div class="auth-buttons">
       <a id="btn-login-nav" href="cadastrar.html" class="btn">
-        
         <span>LOGIN / CADASTRE-SE</span>
       </a>
     </div>
@@ -73,45 +72,46 @@
   </div>
 
   <div class="col-centro">
-    <div class="card equipe-header">
+    <!-- CARD EQUIPE (CONFIGURÁVEL) -->
+    <div class="card equipe-header" id="teamCard">
       <div class="logo-equipe">
-        <img src="/assets/img/GalileuLogo.png" alt="Logo Equipe">
+        <!-- logo configurável -->
+        <img id="teamLogo" src="/assets/img/GalileuLogo.png" alt="Logo Equipe">
       </div>
 
       <div class="equipe-info">
         <h2>Equipe</h2>
-        <p><strong>Nome:</strong> Galileu Robotics</p>
-        <p><strong>Criado em:</strong> 23/03/2003</p>
-        <p><strong>Slogan:</strong> Café para os humanos, código para as máquinas.</p>
+        <p><strong>Nome:</strong> <span id="teamName">-</span></p>
+        <p><strong>Criado em:</strong> <span id="teamCreated">-</span></p>
+        <p><strong>Slogan:</strong> <span id="teamSlogan">-</span></p>
       </div>
 
-      <button class="btn-preto-pequeno" type="button">Editar foto</button>
+      <!-- botão que abre o modal de configuração (nome, data, slogan, logo, banner) -->
+      <button id="btnEditTeam" class="btn-preto-pequeno" type="button">Editar equipe</button>
     </div>
 
     <div class="listas-container">
       <div class="card lista-card">
         <h3>Membro</h3>
-        <ul class="scroll-list">
-          <li>Guilherme Nobre</li>
-          <li>Fernanda Gomes</li>
-        </ul>
+
+        <!-- lista dinâmica -->
+        <ul class="scroll-list" id="memberList"></ul>
 
         <div class="add-box">
-          <input type="text" placeholder="Nome">
-          <button class="btn-preto-full" type="button">Adicionar membro</button>
+          <input id="memberName" type="text" placeholder="Nome do membro">
+          <button id="addMember" class="btn-preto-full" type="button">Adicionar membro</button>
         </div>
       </div>
 
       <div class="card lista-card">
         <h3>Robô</h3>
-        <ul class="scroll-list">
-          <li>Robô 1</li>
-          <li>Robô 2</li>
-        </ul>
+
+        <!-- lista dinâmica -->
+        <ul class="scroll-list" id="robotList"></ul>
 
         <div class="add-box">
-          <input type="text" placeholder="Nome">
-          <button class="btn-preto-full" type="button">Adicionar robô</button>
+          <input id="robotName" type="text" placeholder="Nome do robô">
+          <button id="addRobot" class="btn-preto-full" type="button">Adicionar robô</button>
         </div>
       </div>
     </div>
