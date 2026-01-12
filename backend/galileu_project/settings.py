@@ -25,7 +25,6 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "teams.apps.TeamsConfig",
     "accounts",
-    "teams",
 ]
 
 MIDDLEWARE = [
