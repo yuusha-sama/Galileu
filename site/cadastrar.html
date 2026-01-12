@@ -1,18 +1,16 @@
 <!DOCTYPE html>
+
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login / Cadastro</title>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Exo+2:wght@700;800&family=Lato:wght@400;700&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/cadastrar.css">
-
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Login / Cadastro</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=Exo+2:wght@700;800&amp;family=Lato:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="/css/style.css?v=2" rel="stylesheet"/>
+<link href="/css/cadastrar.css" rel="stylesheet"/>
+<style>
         .auth-alert{
             max-width: 1200px;
             margin: 12px auto 0 auto;
@@ -27,161 +25,135 @@
         .auth-alert.show{ display:block; }
     </style>
 </head>
-
 <body>
-    <header>
-        <nav>
-            <div class="logo">
-                <a href="/index.html"><img src="/assets/img/GalileuLogo.png" alt="Logo da Galileu Robotics"></a>
-            </div>
-
-            <button class="hamburger" id="hamburger-btn" type="button" aria-label="Abrir menu" aria-expanded="false">
-                <span></span><span></span><span></span>
-            </button>
-
-            <ul class="nav-links" id="nav-links">
-                <li><a href="/eventos.html">Eventos</a></li>
-                <li><a href="/blog.html">Blog</a></li>
-                <li><a href="/artigo.html">Forum</a></li>
-                <li><a href="/sobre.html">Sobre Nós</a></li>
-            </ul>
-
-            <div class="auth-buttons" id="auth-area">
-                <a id="btn-login-nav" href="/cadastrar.html" class="btn">
-                    <img src="/assets/img/leoLogin.png" alt="LoginLeo">
-                    <span>LOGIN / CADASTRE-SE</span>
-                </a>
-            </div>
-
-            <div class="user-menu" id="user-menu" hidden>
-                <button class="user-menu-btn" id="user-menu-btn" type="button" aria-haspopup="true" aria-expanded="false">
-                    <span class="user-name" id="user-name">Conta</span>
-                    <span class="chev">▾</span>
-                </button>
-                <div class="user-menu-dropdown" id="user-menu-dropdown" hidden>
-                    <a href="/minha-equipe.html">Minha equipe</a>
-                    <button type="button" id="btn-logout">Sair</button>
-                </div>
-            </div>
-        </nav>
-    </header>
-
-    <main>
-        <div class="banner">
-            <img src="/assets/img/banner com vários leos laranjas.png" alt="banner com vários leos laranjas">
-        </div>
-
-        <div id="auth-alert" class="auth-alert" role="alert"></div>
-
-        <div class="auth-container">
-
-            <section class="login">
-                <h2>Faça o login</h2>
-                <form id="login-form" autocomplete="on">
-                    <div class="form-group">
-                        <input type="email" placeholder="Email" id="login-email" name="email" required autocomplete="email">
-                    </div>
-
-                    <div class="form-group">
-                        <input type="password" placeholder="Senha" id="login-senha" name="senha" required autocomplete="current-password">
-                    </div>
-
-                    <a id="forgot-link" href="#" class="forgot-password">Esqueceu a senha?</a>
-                    <button id="login-btn" type="submit">ENTRAR</button>
-                </form>
-            </section>
-
-            <div class="divisoria"></div>
-
-            <section class="cadastro">
-                <h2>Crie uma nova conta</h2>
-                <p>É rápido e fácil</p>
-
-                <form id="cadastro-form" autocomplete="on">
-                    <div class="form-group">
-                        <input type="email" placeholder="Email" id="cadastro-email" name="email" required autocomplete="email">
-                    </div>
-
-                    <div class="form-group">
-                        <input type="text" placeholder="Nome Completo" id="cadastro-nome" name="nome" required autocomplete="name">
-                    </div>
-
-                    <div class="form-group">
-                        <input type="date" id="cadastro-nascimento" name="nascimento" required>
-                    </div>
-
-                    <div class="row">
-                        <div class="form-group">
-                            <input type="text" placeholder="CPF" id="cadastro-cpf" name="cpf" required inputmode="numeric" maxlength="14">
-                        </div>
-                        <div class="form-group">
-                            <input type="tel" placeholder="Telefone" id="cadastro-telefone" name="telefone" required inputmode="tel" autocomplete="tel">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <input type="password" placeholder="Senha (mínimo 8 caracteres)" id="cadastro-senha" name="senha" required autocomplete="new-password">
-                    </div>
-
-                    <div class="form-group">
-                        <input type="password" placeholder="Confirmar Senha" id="cadastro-confirmar" name="confirmar" required autocomplete="new-password">
-                    </div>
-
-                    <button id="cadastro-btn" type="submit">CADASTRE-SE</button>
-                </form>
-            </section>
-        </div>
-    </main>
-
-    <footer class="main-footer">
-        <div class="footer-upper"></div>
-        <div class="footer-lower">
-            <div class="container footer-content">
-
-                <div class="footer-column">
-                    <div class="footer-title">
-                        <h3>Ajuda</h3>
-                    </div>
-                    <div class="footer-links">
-                        <ul>
-                            <li><a href="#">Ficou alguma dúvida?</a></li>
-                            <li><a href="#">Fale conosco</a></li>
-                            <li><a href="#">Compliance</a></li>
-                            <li><a href="#">Política de privacidade</a></li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="footer-column">
-                    <div class="footer-title">
-                        <h3>Redes Sociais</h3>
-                    </div>
-                    <div class="footer-social">
-                        <a href="https://www.instagram.com/galileurobotics">
-                            <img src="/assets/img/iconeInsta.png" alt="Instagram">
-                        </a>
-                        <a href="https://www.linkedin.com/company/galileu-robotics/?viewAsMember=true">
-                            <img src="/assets/img/iconeLinkedin.png" alt="linkedIn">
-                        </a>
-                        <a href="https://www.youtube.com/@GalileuRobotics">
-                            <img src="/assets/img/iconeYT.png" alt="YouTube">
-                        </a>
-                    </div>
-                </div>
-
-            </div>
-            <div class="container footer-copyright-container">
-                <div class="footer-copyright">
-                    <p><small>&copy; 2025 Galileu Robotics - todos os direitos reservados</small></p>
-                </div>
-            </div>
-
-        </div>
-    </footer>
-
-    <script src="/config.js"></script>
-    <script src="/js/auth.js"></script>
-    <script src="/js/navbar.js"></script>
-    <script src="/js/cadastrar.page.js"></script>
+<header>
+<nav>
+<div class="logo">
+<a href="/index.html"><img alt="Logo da Galileu Robotics" src="/assets/img/GalileuLogo.png"/></a>
+</div>
+<button aria-expanded="false" aria-label="Abrir menu" class="hamburger" id="hamburger-btn" type="button">
+<span></span><span></span><span></span>
+</button>
+<ul class="nav-links" id="nav-links">
+<li><a href="/eventos.html">Eventos</a></li>
+<li><a href="/blog.html">Blog</a></li>
+<li><a href="/artigo.html">Forum</a></li>
+<li><a href="/sobre.html">Sobre Nós</a></li>
+</ul>
+<div class="auth-buttons" id="auth-area">
+<a class="btn" href="/cadastrar.html" id="btn-login-nav">
+<img alt="LoginLeo" src="/assets/img/leoLogin.png"/>
+<span>LOGIN / CADASTRE-SE</span>
+</a>
+</div>
+<div class="user-menu" hidden="" id="user-menu">
+<button aria-expanded="false" aria-haspopup="true" class="user-menu-btn" id="user-menu-btn" type="button">
+<span class="user-name" id="user-name">Conta</span>
+<span class="chev">▾</span>
+</button>
+<div class="user-menu-dropdown" hidden="" id="user-menu-dropdown">
+<a href="/minha-equipe.html">Minha equipe</a>
+<button id="btn-logout" type="button">Sair</button>
+</div>
+</div>
+</nav>
+</header>
+<main>
+<div class="banner">
+<img alt="banner com vários leos laranjas" src="/assets/img/banner com vários leos laranjas.png"/>
+</div>
+<div class="auth-alert" id="auth-alert" role="alert"></div>
+<div class="auth-container">
+<section class="login">
+<h2>Faça o login</h2>
+<form autocomplete="on" id="login-form">
+<div class="form-group">
+<input autocomplete="email" id="login-email" name="email" placeholder="Email" required="" type="email"/>
+</div>
+<div class="form-group">
+<input autocomplete="current-password" id="login-senha" name="senha" placeholder="Senha" required="" type="password"/>
+</div>
+<a class="forgot-password" href="#" id="forgot-link">Esqueceu a senha?</a>
+<button id="login-btn" type="submit">ENTRAR</button>
+</form>
+</section>
+<div class="divisoria"></div>
+<section class="cadastro">
+<h2>Crie uma nova conta</h2>
+<p>É rápido e fácil</p>
+<form autocomplete="on" id="cadastro-form">
+<div class="form-group">
+<input autocomplete="email" id="cadastro-email" name="email" placeholder="Email" required="" type="email"/>
+</div>
+<div class="form-group">
+<input autocomplete="name" id="cadastro-nome" name="nome" placeholder="Nome Completo" required="" type="text"/>
+</div>
+<div class="form-group">
+<input id="cadastro-nascimento" name="nascimento" required="" type="date"/>
+</div>
+<div class="row">
+<div class="form-group">
+<input id="cadastro-cpf" inputmode="numeric" maxlength="14" name="cpf" placeholder="CPF" required="" type="text"/>
+</div>
+<div class="form-group">
+<input autocomplete="tel" id="cadastro-telefone" inputmode="tel" name="telefone" placeholder="Telefone" required="" type="tel"/>
+</div>
+</div>
+<div class="form-group">
+<input autocomplete="new-password" id="cadastro-senha" name="senha" placeholder="Senha (mínimo 8 caracteres)" required="" type="password"/>
+</div>
+<div class="form-group">
+<input autocomplete="new-password" id="cadastro-confirmar" name="confirmar" placeholder="Confirmar Senha" required="" type="password"/>
+</div>
+<button id="cadastro-btn" type="submit">CADASTRE-SE</button>
+</form>
+</section>
+</div>
+</main>
+<footer class="main-footer">
+<div class="footer-upper"></div>
+<div class="footer-lower">
+<div class="container footer-content">
+<div class="footer-column">
+<div class="footer-title">
+<h3>Ajuda</h3>
+</div>
+<div class="footer-links">
+<ul>
+<li><a href="#">Ficou alguma dúvida?</a></li>
+<li><a href="#">Fale conosco</a></li>
+<li><a href="#">Compliance</a></li>
+<li><a href="#">Política de privacidade</a></li>
+</ul>
+</div>
+</div>
+<div class="footer-column">
+<div class="footer-title">
+<h3>Redes Sociais</h3>
+</div>
+<div class="footer-social">
+<a href="https://www.instagram.com/galileurobotics">
+<img alt="Instagram" src="/assets/img/iconeInsta.png"/>
+</a>
+<a href="https://www.linkedin.com/company/galileu-robotics/?viewAsMember=true">
+<img alt="linkedIn" src="/assets/img/iconeLinkedin.png"/>
+</a>
+<a href="https://www.youtube.com/@GalileuRobotics">
+<img alt="YouTube" src="/assets/img/iconeYT.png"/>
+</a>
+</div>
+</div>
+</div>
+<div class="container footer-copyright-container">
+<div class="footer-copyright">
+<p><small>© 2025 Galileu Robotics - todos os direitos reservados</small></p>
+</div>
+</div>
+</div>
+</footer>
+<script src="/config.js?v=2"></script>
+<script src="/js/auth.js?v=2"></script>
+<script src="/js/navbar.js?v=2"></script>
+<script src="/js/cadastrar.page.js?v=2"></script>
 </body>
 </html>

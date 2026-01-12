@@ -1,116 +1,99 @@
 <!DOCTYPE html>
+
 <html lang="pt-BR">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home - Galileu Robotics</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Exo+2:wght@700;800&family=Lato:wght@400;700&display=swap"
-        rel="stylesheet">
-
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="./css/index.css">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Home - Galileu Robotics</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=Exo+2:wght@700;800&amp;family=Lato:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="/css/style.css?v=2" rel="stylesheet"/>
+<link href="./css/index.css" rel="stylesheet"/>
 </head>
-
 <body>
-
-    
-    <header>
-        <nav>
-            <div class="logo">
-                <a href="/index.html"><img src="/assets/img/GalileuLogo.png" alt="Logo da Galileu Robotics"></a>
-            </div>
-
-            <button class="hamburger" id="hamburger-btn" type="button" aria-label="Abrir menu" aria-expanded="false">
-                <span></span><span></span><span></span>
-            </button>
-
-            <ul class="nav-links" id="nav-links">
-                <li><a href="/eventos.html">Eventos</a></li>
-                <li><a href="/blog.html">Blog</a></li>
-                <li><a href="/artigo.html">Forum</a></li>
-                <li><a href="/sobre.html">Sobre Nós</a></li>
-            </ul>
-
-            <div class="auth-buttons" id="auth-area">
-                <a id="btn-login-nav" href="/cadastrar.html" class="btn">
-                    <img src="/assets/img/leoLogin.png" alt="LoginLeo">
-                    <span>LOGIN / CADASTRE-SE</span>
-                </a>
-            </div>
-
-            <div class="user-menu" id="user-menu" hidden>
-                <button class="user-menu-btn" id="user-menu-btn" type="button" aria-haspopup="true" aria-expanded="false">
-                    <span class="user-name" id="user-name">Conta</span>
-                    <span class="chev">▾</span>
-                </button>
-                <div class="user-menu-dropdown" id="user-menu-dropdown" hidden>
-                    <a href="/minha-equipe.html">Minha equipe</a>
-                    <button type="button" id="btn-logout">Sair</button>
-                </div>
-            </div>
-        </nav>
-    </header>
-
-
-    <main>
-        <section id="hero" class="hero-section">
-            <div class="container">
-                <h2 class="hero-title">Do Giz ao Circuito:</h2>
-                <h3 class="hero-subtitle">A Jornada dos Campeões de <span class="littleOrange">Robótica</span></h3>
-                <p class="hero-description">
+<header>
+<nav>
+<div class="logo">
+<a href="/index.html"><img alt="Logo da Galileu Robotics" src="/assets/img/GalileuLogo.png"/></a>
+</div>
+<button aria-expanded="false" aria-label="Abrir menu" class="hamburger" id="hamburger-btn" type="button">
+<span></span><span></span><span></span>
+</button>
+<ul class="nav-links" id="nav-links">
+<li><a href="/eventos.html">Eventos</a></li>
+<li><a href="/blog.html">Blog</a></li>
+<li><a href="/artigo.html">Forum</a></li>
+<li><a href="/sobre.html">Sobre Nós</a></li>
+</ul>
+<div class="auth-buttons" id="auth-area">
+<a class="btn" href="/cadastrar.html" id="btn-login-nav">
+<img alt="LoginLeo" src="/assets/img/leoLogin.png"/>
+<span>LOGIN / CADASTRE-SE</span>
+</a>
+</div>
+<div class="user-menu" hidden="" id="user-menu">
+<button aria-expanded="false" aria-haspopup="true" class="user-menu-btn" id="user-menu-btn" type="button">
+<span class="user-name" id="user-name">Conta</span>
+<span class="chev">▾</span>
+</button>
+<div class="user-menu-dropdown" hidden="" id="user-menu-dropdown">
+<a href="/minha-equipe.html">Minha equipe</a>
+<button id="btn-logout" type="button">Sair</button>
+</div>
+</div>
+</nav>
+</header>
+<main>
+<section class="hero-section" id="hero">
+<div class="container">
+<h2 class="hero-title">Do Giz ao Circuito:</h2>
+<h3 class="hero-subtitle">A Jornada dos Campeões de <span class="littleOrange">Robótica</span></h3>
+<p class="hero-description">
                     LOREM IPSUM DOLOR SIT AMET, CONSECTETUR ADIPISCING ELIT. IN UT POSUERE NULLA. SED AC EX NIBH.
                     MAECENAS IN IACULIS MI. PHASELLUS LACINIA LUCTUS LACUS AT TINCIDUNT. DUIS VEL FELIS EUISMOD,
                     SUSCIPIT MAGNA IN, MAXIMUS PURUS.
                 </p>
-                <a href="#" class="btn-cta">LER MAIS</a>
-        </section>
-
-        <section id="quick-access" class="quick-access-section">
-            <div class="container">
-                <a href="/sobre.html" class="card-link">
-                    <div class="access-card">
-                        <img src="/assets/img/noticiasGalileu.png" alt="Ícone de Notícias" class="card-icon">
-                        <h3 class="card-title">Notícias</h3>
-                        <p class="card-description">Robôs, IA e o amanhã: descubra o que vem por aí.</p>
-                    </div>
-                </a>
-
-                <a href="/sobre.html" class="card-link">
-                    <div class="access-card">
-                        <img src="/assets/img/replayGalileu.png" alt="Ícone de Replay" class="card-icon">
-                        <h3 class="card-title">Replay</h3>
-                        <p class="card-description">A batalha dos robôs terminou, mas a emoção continua.</p>
-                    </div>
-                </a>
-
-                <a href="/sobre.html" class="card-link">
-                    <div class="access-card">
-                        <img src="/assets/img/construaGalileu.png" alt="Ícone de Construa" class="card-icon">
-                        <h3 class="card-title">Construa</h3>
-                        <p class="card-description">Faça Parte da Revolução: Crie sua Própria Batalha de Robôs!</p>
-                    </div>
-                </a>
-
-                <a href="/sobre.html" class="card-link">
-                    <div class="access-card">
-                        <img src="/assets/img/talentosGalileu.png" alt="Ícone de Talentos" class="card-icon">
-                        <h3 class="card-title">Talentos</h3>
-                        <p class="card-description">Sua Paixão, Nossa Arena: Junte-se ao Time que Constrói o Espetáculo.
+<a class="btn-cta" href="#">LER MAIS</a>
+</div></section>
+<section class="quick-access-section" id="quick-access">
+<div class="container">
+<a class="card-link" href="/sobre.html">
+<div class="access-card">
+<img alt="Ícone de Notícias" class="card-icon" src="/assets/img/noticiasGalileu.png"/>
+<h3 class="card-title">Notícias</h3>
+<p class="card-description">Robôs, IA e o amanhã: descubra o que vem por aí.</p>
+</div>
+</a>
+<a class="card-link" href="/sobre.html">
+<div class="access-card">
+<img alt="Ícone de Replay" class="card-icon" src="/assets/img/replayGalileu.png"/>
+<h3 class="card-title">Replay</h3>
+<p class="card-description">A batalha dos robôs terminou, mas a emoção continua.</p>
+</div>
+</a>
+<a class="card-link" href="/sobre.html">
+<div class="access-card">
+<img alt="Ícone de Construa" class="card-icon" src="/assets/img/construaGalileu.png"/>
+<h3 class="card-title">Construa</h3>
+<p class="card-description">Faça Parte da Revolução: Crie sua Própria Batalha de Robôs!</p>
+</div>
+</a>
+<a class="card-link" href="/sobre.html">
+<div class="access-card">
+<img alt="Ícone de Talentos" class="card-icon" src="/assets/img/talentosGalileu.png"/>
+<h3 class="card-title">Talentos</h3>
+<p class="card-description">Sua Paixão, Nossa Arena: Junte-se ao Time que Constrói o Espetáculo.
                         </p>
-                    </div>
-                </a>
-            </div>
-        </section>
-
-        <section id="manifesto" class="manifesto-section">
-            <div class="container">
-                <div class="manifesto-text">
-                    <h2 class="section-title">Tecnologia que <span class="littleOrange">transforma</span> o futuro</h2>
-                    <p class="section-description">
+</div>
+</a>
+</div>
+</section>
+<section class="manifesto-section" id="manifesto">
+<div class="container">
+<div class="manifesto-text">
+<h2 class="section-title">Tecnologia que <span class="littleOrange">transforma</span> o futuro</h2>
+<p class="section-description">
                         Em um mundo onde a inovação é a moeda de maior valor, nós transformamos a paixão pela robótica
                         em um esporte vibrante, criando eventos que vão muito além de competições. Nosso trabalho é um
                         investimento no futuro, onde cada equipe apoiada e cada robô construído representa o talento e o
@@ -118,110 +101,97 @@
                         visibilidade e prestígio, não apenas motivamos jovens a seguir carreiras em tecnologia, mas
                         também criamos uma plataforma de sucesso para todos os envolvidos.
                     </p>
-                </div>
-                <div class="manifesto-visual">
-                    <video autoplay loop muted playsinline>
-                        <source src="/assets/videos/Letreiro animado bem vindo ao canal gamer colorido video.mp4"
-                            type="video/mp4">
+</div>
+<div class="manifesto-visual">
+<video autoplay="" loop="" muted="" playsinline="">
+<source src="/assets/videos/Letreiro animado bem vindo ao canal gamer colorido video.mp4" type="video/mp4"/>
                         Seu navegador não suporta vídeos.
                     </video>
-                </div>
-            </div>
-        </section>
-
-        <section id="diferenciais" class="diferenciais-section">
-            <div class="container">
-
-                <div class="diferenciais-visual">
-                    <img src="/assets/img/fernanda-esporro-equipe.jpg"
-                        alt="Equipe e participantes em um evento da Galileu Robotics">
-                </div>
-
-                <div class="diferenciais-conteudo">
-                    <h2 class="section-title">O que nos torna <span class="littleOrange">diferentes</span></h2>
-                    <p class="section-description">
+</div>
+</div>
+</section>
+<section class="diferenciais-section" id="diferenciais">
+<div class="container">
+<div class="diferenciais-visual">
+<img alt="Equipe e participantes em um evento da Galileu Robotics" src="/assets/img/fernanda-esporro-equipe.jpg"/>
+</div>
+<div class="diferenciais-conteudo">
+<h2 class="section-title">O que nos torna <span class="littleOrange">diferentes</span></h2>
+<p class="section-description">
                         Promovemos eventos de robótica que vão além da competição, com workshops, vivências interativas
                         e bate-papos.
                     </p>
-
-                    <div class="diferenciais-grid">
-                        <div class="diferencial-card">
-                            <h3>Palestras</h3>
-                            <p>Inspiração e conhecimento em pauta: especialistas compartilham tendências e visões sobre
+<div class="diferenciais-grid">
+<div class="diferencial-card">
+<h3>Palestras</h3>
+<p>Inspiração e conhecimento em pauta: especialistas compartilham tendências e visões sobre
                                 inteligência artificial, personalização em tempo real e os impactos da tecnologia nos
                                 negócios.</p>
-                        </div>
-                        <div class="diferencial-card">
-                            <h3>Experiências imersivas</h3>
-                            <p>Tecnologia para sentir na pele: vivências que aproximam o público do futuro, explorando
+</div>
+<div class="diferencial-card">
+<h3>Experiências imersivas</h3>
+<p>Tecnologia para sentir na pele: vivências que aproximam o público do futuro, explorando
                                 mundos digitais e novas interações.</p>
-                        </div>
-                        <div class="diferencial-card">
-                            <h3>Oficinas</h3>
-                            <p>Aprender fazendo: atividades práticas que colocam crianças no centro da criação,
+</div>
+<div class="diferencial-card">
+<h3>Oficinas</h3>
+<p>Aprender fazendo: atividades práticas que colocam crianças no centro da criação,
                                 experimentando robótica, realidade virtual e muito mais.</p>
-                        </div>
-                        <div class="diferencial-card">
-                            <h3>Desafios</h3>
-                            <p>A emoção da competição: batalhas de robôs, sumô e provas de atletismo que unem
+</div>
+<div class="diferencial-card">
+<h3>Desafios</h3>
+<p>A emoção da competição: batalhas de robôs, sumô e provas de atletismo que unem
                                 estratégia, criatividade e adrenalina em cada movimento.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <footer class="main-footer">
-        <div class="footer-upper"></div>
-        <div class="footer-lower">
-            <div class="container footer-content">
-
-                <div class="footer-column">
-                    <div class="footer-title">
-                        <h3>Ajuda</h3>
-                    </div>
-                    <div class="footer-links">
-                        <ul>
-                            <li><a href="#">Ficou alguma dúvida?</a></li>
-                            <li><a href="#">Fale conosco</a></li>
-                            <li><a href="#">Compliance</a></li>
-                            <li><a href="#">Política de privacidade</a></li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="footer-column">
-                    <div class="footer-title">
-                        <h3>Redes Sociais</h3>
-                    </div>
-                    <div class="footer-social">
-                        <a href="https://www.instagram.com/galileurobotics">
-                            <img src="/assets/img/iconeInsta.png" alt="Instagram">
-                        </a>
-                        <a href="https://www.linkedin.com/company/galileu-robotics/?viewAsMember=true">
-                            <img src="/assets/img/iconeLinkedin.png" alt="linkedIn">
-                        </a>
-                        <a href="#">
-                            <img src="/assets/img/iconeYT.png" alt="YouTube">
-                        </a>
-                    </div>
-                </div>
-
-            </div>
-            <div class="container footer-copyright-container">
-                <div class="footer-copyright">
-                    <p><small>&copy; 2025 Galileu Robotics - todos os direitos reservados</small></p>
-                </div>
-            </div>
-
-        </div>
-    </footer>
-
-    <script src="/config.js"></script>
-    <script src="/js/auth.js"></script>
-    <script src="/js/navbar.js"></script>
-    <script src="/js/main.js"></script>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<footer class="main-footer">
+<div class="footer-upper"></div>
+<div class="footer-lower">
+<div class="container footer-content">
+<div class="footer-column">
+<div class="footer-title">
+<h3>Ajuda</h3>
+</div>
+<div class="footer-links">
+<ul>
+<li><a href="#">Ficou alguma dúvida?</a></li>
+<li><a href="#">Fale conosco</a></li>
+<li><a href="#">Compliance</a></li>
+<li><a href="#">Política de privacidade</a></li>
+</ul>
+</div>
+</div>
+<div class="footer-column">
+<div class="footer-title">
+<h3>Redes Sociais</h3>
+</div>
+<div class="footer-social">
+<a href="https://www.instagram.com/galileurobotics">
+<img alt="Instagram" src="/assets/img/iconeInsta.png"/>
+</a>
+<a href="https://www.linkedin.com/company/galileu-robotics/?viewAsMember=true">
+<img alt="linkedIn" src="/assets/img/iconeLinkedin.png"/>
+</a>
+<a href="#">
+<img alt="YouTube" src="/assets/img/iconeYT.png"/>
+</a>
+</div>
+</div>
+</div>
+<div class="container footer-copyright-container">
+<div class="footer-copyright">
+<p><small>© 2025 Galileu Robotics - todos os direitos reservados</small></p>
+</div>
+</div>
+</div>
+</footer>
+<script src="/config.js?v=2"></script>
+<script src="/js/auth.js?v=2"></script>
+<script src="/js/navbar.js?v=2"></script>
+<script src="/js/main.js?v=2"></script>
 </body>
-
 </html>

@@ -1,150 +1,161 @@
 (function () {
-  function ensureNavCss() {
-    if (document.getElementById("galileu-nav-extra-css")) return;
+  const STYLE_ID = "galileu-navbar-auth-style";
 
-    const css = `
-/* ===== Galileu navbar extras (hamburger + user menu) ===== */
-.hamburger{display:none;align-items:center;justify-content:center;width:44px;height:44px;border:0;background:transparent;cursor:pointer;border-radius:10px}
-.hamburger span{display:block;width:24px;height:2px;margin:4px 0;background:#111;border-radius:2px}
-.nav-links{list-style:none}
-.user-menu{display:flex;align-items:center;gap:10px}
-.user-menu-btn{border:0;background:transparent;cursor:pointer;font-family:inherit;font-weight:700;display:flex;align-items:center;gap:6px;padding:10px 12px;border-radius:12px}
-.user-menu-dropdown{position:absolute;right:16px;top:72px;min-width:200px;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:14px;padding:8px;box-shadow:0 10px 24px rgba(0,0,0,.10);z-index:9999}
-.user-menu-dropdown a, .user-menu-dropdown button{display:block;width:100%;text-align:left;border:0;background:transparent;padding:10px 10px;border-radius:10px;cursor:pointer;font-family:inherit}
-.user-menu-dropdown a:hover, .user-menu-dropdown button:hover{background:rgba(0,0,0,.06)}
-/* mobile */
-@media (max-width: 860px){
-  .hamburger{display:flex}
-  .nav-links{display:none;position:absolute;left:0;right:0;top:72px;background:#fff;border-top:1px solid rgba(0,0,0,.08);padding:12px 16px;gap:10px;flex-direction:column;z-index:9998}
-  .nav-links.open{display:flex}
-}
-`;
+  function injectStyles() {
+    if (document.getElementById(STYLE_ID)) return;
+
     const style = document.createElement("style");
-    style.id = "galileu-nav-extra-css";
-    style.textContent = css;
+    style.id = STYLE_ID;
+    style.textContent = `
+      /* Garantir contraste do botão de conta (alguns estilos do tema deixam o texto preto) */
+      .user-menu-btn, .user-menu-btn * { color: #fff !important; }
+      .user-menu-btn { display: inline-flex; align-items: center; gap: 8px; }
+
+      .user-menu { position: relative; }
+
+      .user-menu-dropdown{
+        display:none;
+        position:absolute;
+        right:0;
+        top: calc(100% + 10px);
+        background:#fff;
+        border-radius:14px;
+        box-shadow:0 10px 30px rgba(0,0,0,.15);
+        overflow:hidden;
+        min-width: 200px;
+        z-index: 9999;
+      }
+
+      .user-menu-dropdown .dropdown-item{
+        display:block;
+        width:100%;
+        text-align:left;
+        padding:12px 14px;
+        background:transparent;
+        border:0;
+        font:inherit;
+        cursor:pointer;
+        color:#111;
+      }
+      .user-menu-dropdown .dropdown-item:hover{
+        background:rgba(0,0,0,.06);
+      }
+      .user-menu-dropdown .logout{
+        color:#b00020;
+        font-weight:600;
+      }
+
+      /* hamburguer (linhas brancas no topo preto) */
+      .hamburger span{ background:#fff !important; }
+    `;
     document.head.appendChild(style);
   }
 
-  function qs(id) { return document.getElementById(id); }
-
-  async function getMe() {
-    try {
-      if (!window.GalileuAuth) return null;
-      return await window.GalileuAuth.me();
-    } catch (e) {
-      return null;
-    }
-  }
-
-  function openDropdown(open) {
-    const btn = qs("user-menu-btn");
-    const dd = qs("user-menu-dropdown");
-    if (!btn || !dd) return;
-
-    dd.hidden = !open;
-    btn.setAttribute("aria-expanded", open ? "true" : "false");
-  }
-
-  function openNav(open) {
-    const nav = qs("nav-links");
-    const btn = qs("hamburger-btn");
-    if (!nav || !btn) return;
-
-    nav.classList.toggle("open", open);
-    btn.setAttribute("aria-expanded", open ? "true" : "false");
-  }
-
-  function mountLoggedOut() {
-    document.body.classList.remove("authenticated");
-    const userMenu = qs("user-menu");
-    if (userMenu) userMenu.hidden = true;
-
-    const authArea = qs("auth-area");
-    if (authArea) authArea.style.display = "";
+  function getEls() {
+    return {
+      authArea: document.getElementById("auth-area") || document.querySelector(".auth-buttons"),
+      userMenu: document.getElementById("user-menu"),
+      userName: document.getElementById("user-name"),
+      menuBtn: document.getElementById("user-menu-btn"),
+      menuDd: document.getElementById("user-menu-dropdown"),
+      logoutBtn: document.getElementById("btn-logout"),
+      hamburger: document.getElementById("hamburger") || document.querySelector(".hamburger"),
+      navLinks: document.getElementById("nav-links") || document.querySelector(".nav-links"),
+    };
   }
 
   function mountLoggedIn(me) {
-    document.body.classList.add("authenticated");
-
-    const authArea = qs("auth-area");
+    const { authArea, userMenu, userName } = getEls();
     if (authArea) authArea.style.display = "none";
+    if (userMenu) userMenu.style.display = "block";
 
-    const userMenu = qs("user-menu");
-    if (userMenu) userMenu.hidden = false;
-
-    const userName = qs("user-name");
-    if (userName) userName.textContent = me?.name ? me.name : (me?.email || "Conta");
+    if (userName) {
+      userName.textContent = (me && (me.name || me.email)) ? (me.name || me.email) : "CONTA";
+    }
   }
 
-  async function bindLogout() {
-    const btnLogout = qs("btn-logout");
-    if (!btnLogout) return;
-
-    btnLogout.addEventListener("click", async () => {
-      try { await window.GalileuAuth.logout(); } catch (_) {}
-      location.href = "/index.html";
-    });
+  function mountLoggedOut() {
+    const { authArea, userMenu, userName } = getEls();
+    if (authArea) authArea.style.display = "";
+    if (userMenu) userMenu.style.display = "none";
+    if (userName) userName.textContent = "CONTA";
   }
 
-  function bindHamburger() {
-    const btn = qs("hamburger-btn");
-    const nav = qs("nav-links");
-    if (!btn || !nav) return;
+  function setupAccountMenu() {
+    const { menuBtn, menuDd, logoutBtn } = getEls();
+    if (!menuBtn || !menuDd) return;
 
-    btn.addEventListener("click", () => {
-      const open = !nav.classList.contains("open");
-      openNav(open);
-      openDropdown(false);
-    });
-  }
+    function close() {
+      menuDd.style.display = "none";
+      menuBtn.setAttribute("aria-expanded", "false");
+    }
 
-  function bindUserDropdown() {
-    const btn = qs("user-menu-btn");
-    const dd = qs("user-menu-dropdown");
-    if (!btn || !dd) return;
+    function toggle() {
+      const isOpen = menuDd.style.display === "block";
+      if (isOpen) close();
+      else {
+        menuDd.style.display = "block";
+        menuBtn.setAttribute("aria-expanded", "true");
+      }
+    }
 
-    btn.addEventListener("click", (e) => {
+    menuBtn.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
-      const open = dd.hidden;
-      openDropdown(open);
-      openNav(false);
+      toggle();
     });
 
-    document.addEventListener("click", (e) => {
-      const target = e.target;
-      if (!dd.hidden) {
-        const inside = dd.contains(target) || btn.contains(target);
-        if (!inside) openDropdown(false);
-      }
-    });
+    menuDd.addEventListener("click", (e) => e.stopPropagation());
 
-    window.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") {
-        openDropdown(false);
-        openNav(false);
-      }
+    document.addEventListener("click", () => close());
+    window.addEventListener("resize", () => close());
+
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        try {
+          if (window.GalileuAuth && window.GalileuAuth.logout) {
+            await window.GalileuAuth.logout();
+          }
+        } catch (_) {
+          // mesmo que dê erro, vamos "forçar" o estado a atualizar
+        }
+        // Volta pro home e o navbar vai recalcular o estado (me)
+        window.location.href = "/index.html";
+      });
+    }
+  }
+
+  function setupHamburger() {
+    const { hamburger, navLinks } = getEls();
+    if (!hamburger || !navLinks) return;
+
+    hamburger.addEventListener("click", () => {
+      navLinks.classList.toggle("open");
+      hamburger.classList.toggle("open");
     });
   }
 
-  async function init() {
-    ensureNavCss();
+  async function refreshAuthState() {
+    if (!window.GalileuAuth || !window.GalileuAuth.me) {
+      mountLoggedOut();
+      return;
+    }
 
-    bindHamburger();
-    bindUserDropdown();
-    bindLogout();
-
-    const me = await getMe();
-    if (me && (me.authenticated === true || me.ok === true)) {
-      mountLoggedIn(me);
-    } else {
+    try {
+      const me = await window.GalileuAuth.me();
+      // /me/ pode retornar {authenticated: true}
+      if (me && (me.authenticated === true || me.ok === true)) mountLoggedIn(me);
+      else mountLoggedOut();
+    } catch (_) {
       mountLoggedOut();
     }
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init);
-  } else {
-    init();
-  }
+  document.addEventListener("DOMContentLoaded", async () => {
+    injectStyles();
+    setupHamburger();
+    setupAccountMenu();
+    await refreshAuthState();
+  });
 })();

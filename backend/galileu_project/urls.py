@@ -4,9 +4,9 @@ from django.urls import path, include
 urlpatterns = [
     path("admin/", admin.site.urls),
 
-    # funciona direto no Django:
-    path("auth/", include("accounts.urls")),
-
-    # funciona quando o front chama /api/auth/...:
+    # rota "principal" usada pelo frontend (/api/auth/...)
     path("api/auth/", include("accounts.urls")),
+
+    # compatibilidade (se o NGINX estiver removendo o prefixo /api/)
+    path("auth/", include("accounts.urls")),
 ]
