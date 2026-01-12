@@ -1,134 +1,168 @@
 (function () {
-  function onlyDigits(s) {
-    return String(s || "").replace(/\D+/g, "");
-  }
+  const msgEl = document.getElementById("auth-msg");
+  const loginForm = document.getElementById("login-form");
+  const cadastroForm = document.getElementById("cadastro-form");
 
-  function isValidCPF(cpf) {
-    cpf = onlyDigits(cpf);
-    if (cpf.length !== 11) return false;
-    if (/^(\d)\1+$/.test(cpf)) return false;
-
-    let sum = 0;
-    for (let i = 0; i < 9; i++) sum += parseInt(cpf[i], 10) * (10 - i);
-    let d1 = (sum * 10) % 11;
-    if (d1 === 10) d1 = 0;
-    if (d1 !== parseInt(cpf[9], 10)) return false;
-
-    sum = 0;
-    for (let i = 0; i < 10; i++) sum += parseInt(cpf[i], 10) * (11 - i);
-    let d2 = (sum * 10) % 11;
-    if (d2 === 10) d2 = 0;
-    if (d2 !== parseInt(cpf[10], 10)) return false;
-
-    return true;
-  }
-
-  function ensureFlash() {
-    let box = document.getElementById("flash");
-    if (box) return box;
-
-    box = document.createElement("div");
-    box.id = "flash";
-    box.style.maxWidth = "1100px";
-    box.style.margin = "20px auto 0";
-    box.style.padding = "12px 14px";
-    box.style.borderRadius = "12px";
-    box.style.display = "none";
-    box.style.fontWeight = "700";
-
-    const main = document.querySelector("main");
-    if (main) main.insertAdjacentElement("afterbegin", box);
-    else document.body.insertAdjacentElement("afterbegin", box);
-
-    return box;
-  }
-
-  function flash(msg, type = "error") {
-    const box = ensureFlash();
-    box.textContent = msg;
-    box.style.display = "block";
-    box.style.border = "1px solid rgba(0,0,0,.15)";
-    box.style.background = type === "success" ? "rgba(0, 180, 60, .12)" : "rgba(255, 123, 0, .12)";
-    box.style.color = "#111";
-  }
-
-  function clearFlash() {
-    const box = document.getElementById("flash");
-    if (box) box.style.display = "none";
-  }
-
-  function val(id) {
-    const el = document.getElementById(id);
-    return el ? el.value : "";
-  }
-
-  document.addEventListener("DOMContentLoaded", () => {
-    const loginForm = document.getElementById("login-form");
-    const cadastroForm = document.getElementById("cadastro-form");
-
-    if (!window.GalileuAuth) {
-      flash("GalileuAuth não carregou. Confira /config.js, /js/auth.js e a ordem dos scripts.", "error");
+  function setMsg(text, type = "error") {
+    if (!msgEl) {
+      if (type !== "ok") alert(text);
       return;
     }
+    msgEl.style.display = "block";
+    msgEl.textContent = text;
 
-    if (loginForm) {
-      loginForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        clearFlash();
+    if (type === "ok") {
+      msgEl.style.borderColor = "#10b981";
+      msgEl.style.background = "#ecfdf5";
+      msgEl.style.color = "#065f46";
+    } else {
+      msgEl.style.borderColor = "#ff7a00";
+      msgEl.style.background = "#fff3e8";
+      msgEl.style.color = "#7a2d00";
+    }
+  }
 
-        const email = val("login-email").trim().toLowerCase();
-        const senha = val("login-senha");
+  function clearMsg() {
+    if (!msgEl) return;
+    msgEl.style.display = "none";
+    msgEl.textContent = "";
+  }
 
-        if (!email || !senha) {
-          flash("Preencher email e senha para entrar.", "error");
-          return;
-        }
+  function safeNext() {
+    const sp = new URLSearchParams(location.search);
+    let next = sp.get("next") || "/minha-equipe.html";
 
-        try {
-          await window.GalileuAuth.login({ email, password: senha });
-          window.location.href = "/minha-equipe.html";
-        } catch (err) {
-          flash(err.message || "Falha no login.", "error");
-        }
-      });
+    try {
+      next = decodeURIComponent(next);
+    } catch (_) {}
+
+    // allow only same-origin paths
+    if (next.includes("://") || next.startsWith("//")) next = "/minha-equipe.html";
+    if (!next.startsWith("/")) next = "/" + next.replace(/^\.\//, "");
+
+    // avoid looping back to login page
+    if (next.includes("cadastrar")) next = "/minha-equipe.html";
+
+    return next;
+  }
+
+  function stripCredentialsFromUrl() {
+    const url = new URL(location.href);
+    const params = url.searchParams;
+
+    // common keys from accidental form GET submit
+    const keys = ["email", "senha", "password"];
+    let changed = false;
+
+    for (const k of keys) {
+      if (params.has(k)) {
+        params.delete(k);
+        changed = true;
+      }
     }
 
-    if (cadastroForm) {
-      cadastroForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        clearFlash();
-
-        const email = val("cad-email").trim().toLowerCase();
-        const nome = val("cad-nome").trim();
-        const dataNasc = val("cad-data");
-        const cpf = val("cad-cpf");
-        const telefone = val("cad-telefone").trim();
-        const senha = val("cad-senha");
-
-        if (!email || !nome || !senha) {
-          flash("Preencher email, nome e senha para cadastrar.", "error");
-          return;
-        }
-
-        if (senha.length < 8) {
-          flash("Senha deve ter pelo menos 8 caracteres.", "error");
-          return;
-        }
-
-        if (cpf && !isValidCPF(cpf)) {
-          flash("CPF inválido.", "error");
-          return;
-        }
-
-        try {
-          // Backend atual só usa email, password, name — os outros campos ficam para a próxima etapa
-          await window.GalileuAuth.register({ email, password: senha, name: nome, birthdate: dataNasc, cpf, telefone });
-          flash("Cadastro realizado! Agora faça login para entrar.", "success");
-          cadastroForm.reset();
-        } catch (err) {
-          flash(err.message || "Falha no cadastro.", "error");
-        }
-      });
+    if (changed) {
+      const qs = params.toString();
+      history.replaceState({}, "", url.pathname + (qs ? `?${qs}` : "") + url.hash);
     }
-  });
+  }
+
+  stripCredentialsFromUrl();
+
+  const NEXT = safeNext();
+
+  async function me() {
+    if (!window.GalileuAuth || !window.GalileuAuth.me) return null;
+    try {
+      return await window.GalileuAuth.me();
+    } catch (_) {
+      return null;
+    }
+  }
+
+  async function doLogin(email, password) {
+    if (!window.GalileuAuth || !window.GalileuAuth.login) {
+      throw new Error("GalileuAuth não carregou. Confira se /js/auth.js está sendo carregado.");
+    }
+    await window.GalileuAuth.login({ email, password });
+  }
+
+  // If already logged, don't show login page
+  (async () => {
+    const r = await me();
+    if (r && r.authenticated) {
+      location.replace(NEXT);
+    }
+  })();
+
+  loginForm?.addEventListener(
+    "submit",
+    async (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      clearMsg();
+
+      const email = (document.getElementById("login-email")?.value || "").trim();
+      const password = document.getElementById("login-senha")?.value || "";
+
+      if (!email || !password) {
+        setMsg("Preencha email e senha.");
+        return;
+      }
+
+      try {
+        await doLogin(email, password);
+        setMsg("Login realizado. Redirecionando...", "ok");
+        setTimeout(() => (location.href = NEXT), 200);
+      } catch (err) {
+        setMsg(err?.message || "Falha no login.");
+      }
+    },
+    true
+  );
+
+  cadastroForm?.addEventListener(
+    "submit",
+    async (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      clearMsg();
+
+      const email = (document.getElementById("cadastro-email")?.value || "").trim();
+      const name = (document.getElementById("cadastro-nome")?.value || "").trim();
+      const password = document.getElementById("cadastro-senha")?.value || "";
+      const password2 = document.getElementById("cadastro-senha2")?.value || "";
+
+      if (!email || !name || !password) {
+        setMsg("Preencha email, nome e senha.");
+        return;
+      }
+
+      if (password.length < 8) {
+        setMsg("Senha deve ter pelo menos 8 caracteres.");
+        return;
+      }
+
+      if (password !== password2) {
+        setMsg("As senhas não coincidem.");
+        return;
+      }
+
+      if (!window.GalileuAuth || !window.GalileuAuth.register) {
+        setMsg("GalileuAuth não carregou. Confira se /js/auth.js está sendo carregado.");
+        return;
+      }
+
+      try {
+        await window.GalileuAuth.register({ email, password, name });
+        // auto-login after register
+        await doLogin(email, password);
+        setMsg("Cadastro realizado. Redirecionando...", "ok");
+        setTimeout(() => (location.href = NEXT), 200);
+      } catch (err) {
+        setMsg(err?.message || "Falha no cadastro.");
+      }
+    },
+    true
+  );
 })();
