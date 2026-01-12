@@ -11,45 +11,47 @@
 
 <body>
 <header class="header">
-  <nav class="navbar" role="navigation">
-    <a class="navbar-logo" href="/index.html" aria-label="Galileu Robotics - Home">
-      <img src="/assets/img/GalileuLogo.png" alt="Galileu Robotics">
+  <div class="nav-container">
+    <a href="/index.html" class="logo" aria-label="Galileu Robotics">
+      <img src="/assets/img/logo.png" alt="Galileu Robotics" />
     </a>
 
-    <button id="btn-hamburger" class="hamburger" type="button" aria-label="Abrir menu" aria-expanded="false">☰</button>
+    <div class="nav-links">
+      <ul>
+        <li><a href="/eventos.html">EVENTOS</a></li>
+        <li><a href="/blog.html">BLOG</a></li>
+        <li><a href="/dashboard.html">FORUM</a></li>
+        <li><a href="/sobre.html">SOBRE NÓS</a></li>
+      </ul>
+    </div>
 
-    <ul class="navbar-links" id="nav-links">
-      <li><a href="/eventos.html">EVENTOS</a></li>
-      <li><a href="/blog.html">BLOG</a></li>
-      <li><a href="/artigo.html">FORUM</a></li>
-      <li><a href="/sobre.html">SOBRE NÓS</a></li>
-    </ul>
-
-    <div class="navbar-actions">
-      <a id="btn-login-nav" href="/cadastrar.html" class="btn-login">
-        <img src="/assets/img/leoLogin.png" alt="" aria-hidden="true">
-        <span>LOGIN / CADASTRE-SE</span>
+    <div class="auth-buttons">
+      <a id="btn-login-nav" href="/cadastrar.html" class="btn">
+        <img src="/assets/img/leoLogin.png" alt="" aria-hidden="true" />
+        LOGIN / CADASTRE-SE
       </a>
 
-      <div id="account-menu" class="account" hidden>
-        <button id="account-toggle" class="account-toggle" type="button" aria-expanded="false">
-          <span id="account-name">CONTA</span>
-          <span class="caret">▾</span>
-        </button>
+      <div id="account-menu" class="account-menu" hidden>
+        <a href="#" id="account-toggle" class="btn account-btn" aria-expanded="false">
+          <span class="account-icon" aria-hidden="true">☰</span>
+          <span class="account-name" id="account-name">CONTA</span>
+          <span class="caret" aria-hidden="true">▾</span>
+        </a>
 
         <div id="account-dropdown" class="account-dropdown" hidden>
           <div class="account-meta">
             <div id="account-meta-name" class="account-meta-name">—</div>
             <div id="account-meta-email" class="account-meta-email">—</div>
           </div>
-
           <a class="account-item" href="/minha-equipe.html">Minha equipe</a>
-          <button class="account-item account-logout" type="button" data-action="logout">Sair</button>
+          <button type="button" class="account-item logout" data-action="logout">Sair</button>
         </div>
       </div>
     </div>
-  </nav>
+  </div>
 </header>
+
+
 
 <main class="dashboard-container">
   <div class="col-esquerda">
@@ -156,7 +158,7 @@
 
 <script src="/config.js?v=3"></script>
 <script src="/js/auth.js?v=3"></script>
-<script src="/js/navbar.js?v=3"></script>
+<script src="/js/navbar.js?v=4"></script>
 <script src="/js/minha-equipe.page.js?v=3"></script>
 </body>
 </html>
