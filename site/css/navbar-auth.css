@@ -1,134 +1,140 @@
-/* Auth navbar helpers - v7
-   - Logged out: show LOGIN / CADASTRE-SE
-   - Logged in: show hamburger (cardapio.png) + dropdown
+/* Navbar Auth (v8)
+   - mostra LOGIN/CADASTRE-SE quando deslogado
+   - mostra botão hamburger quando logado
 */
 
-/* Ensure contrast of navbar links on dark background (especially minha-equipe) */
-header nav ul li a,
-header nav ul li a:visited {
-  color: #fff !important;
-}
-
-header nav ul li a:hover {
-  color: #ff7a00 !important;
-}
-
-/* Container where JS injects login/hamburger */
+/* area direita */
 header nav .auth-buttons {
-  position: relative;
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-/* Login CTA (only when logged out) */
-.login-btn,
-.btn-login {
+/* botão login */
+header nav a.login-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 44px;
-  padding: 0 18px;
+  padding: 10px 18px;
+  background: #ff6a00;
   border-radius: 999px;
-  background: #ff7a00;
-  color: #fff !important;
-  font-weight: 800;
-  letter-spacing: .02em;
-  text-decoration: none !important;
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
   border: none;
-  cursor: pointer;
-  transition: filter 120ms ease, transform 120ms ease;
+  white-space: nowrap;
+}
+header nav a.login-btn:hover {
+  filter: brightness(0.95);
 }
 
-.login-btn:hover,
-.btn-login:hover { filter: brightness(.95); }
-
-.login-btn:active,
-.btn-login:active { transform: translateY(1px); }
-
-/* Hamburger button (only when logged in) */
-.account-btn {
+/* botão hamburger */
+header nav button.account-btn {
   width: 46px;
   height: 46px;
-  padding: 0;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.3);
-  background: rgba(0,0,0,0.35);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.2);
+  cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  user-select: none;
+  line-height: 0;
+  padding: 0;
 }
 
-.account-btn:hover {
-  border-color: rgba(255,255,255,0.45);
-  background: rgba(0,0,0,0.45);
-}
-
-.account-btn:active { transform: translateY(1px); }
-
-/* Draw the icon centered using mask so it stays white even if the PNG is dark */
-.account-btn::before {
+header nav button.account-btn::before {
   content: "";
-  width: 22px;
-  height: 22px;
-  background-color: #fff;
-  -webkit-mask: url('/assets/img/cardapio.png') center / contain no-repeat;
-  mask: url('/assets/img/cardapio.png') center / contain no-repeat;
+  width: 20px;
+  height: 20px;
   display: block;
+  background: #fff;
+
+  /* usa o ícone do projeto */
+  -webkit-mask: url('/assets/img/cardapio.png') no-repeat;
+  mask: url('/assets/img/cardapio.png') no-repeat;
+
+  -webkit-mask-size: 20px 20px;
+  mask-size: 20px 20px;
+
+  /* centralizar (o PNG tem espaço extra, então empurra um pouco pra baixo) */
+  -webkit-mask-position: 50% 55%;
+  mask-position: 50% 55%;
 }
 
-/* Dropdown menu */
-.account-menu {
+header nav button.account-btn:hover {
+  background: rgba(255, 106, 0, 0.25);
+  border-color: rgba(255, 106, 0, 0.6);
+}
+
+/* menu dropdown */
+header nav .account-menu {
   position: absolute;
-  right: 0;
-  top: calc(100% + 10px);
-  min-width: 240px;
+  right: 20px;
+  top: 80px;
+  width: 280px;
   background: #fff;
-  border-radius: 14px;
-  box-shadow: 0 16px 32px rgba(0,0,0,0.22);
-  overflow: hidden;
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+  padding: 12px;
   z-index: 9999;
 }
 
-.account-menu.hidden { display: none !important; }
-
-.account-meta {
-  padding: 12px 14px;
-  border-bottom: 1px solid #f0f0f0;
+header nav .account-menu.hidden {
+  display: none;
 }
 
-.account-meta .account-name {
+header nav .account-menu .account-meta {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 8px;
+}
+
+header nav .account-menu .account-name {
   font-weight: 800;
-  font-size: 14px;
   color: #111;
-  line-height: 1.2;
 }
 
-.account-meta .account-email {
-  margin-top: 4px;
-  font-size: 12px;
+header nav .account-menu .account-email {
   color: #666;
-  word-break: break-all;
+  font-size: 13px;
+  margin-top: 4px;
 }
 
-.account-menu a,
-.account-menu button {
+header nav .account-menu a,
+header nav .account-menu button {
+  display: block;
   width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 12px 14px;
-  border: 0;
+  text-align: left;
+  padding: 10px;
+  border-radius: 12px;
+  border: none;
   background: transparent;
   color: #111;
   text-decoration: none;
+  font-weight: 700;
   cursor: pointer;
-  font-size: 14px;
 }
 
-.account-menu a:hover,
-.account-menu button:hover { background: #f6f6f6; }
+header nav .account-menu a:hover,
+header nav .account-menu button:hover {
+  background: #f4f4f4;
+}
 
-.account-menu .danger { color: #c60000; font-weight: 700; }
+header nav .account-menu button.danger {
+  color: #d00000;
+}
+
+/* garante contraste do menu principal em páginas com css que sobrescreve */
+header nav ul li a {
+  color: #fff !important;
+}
+
+header nav .account-menu a,
+header nav .account-menu button {
+  color: #111 !important;
+}
+header nav .account-menu button.danger {
+  color: #d00000 !important;
+}

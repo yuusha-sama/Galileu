@@ -4,97 +4,164 @@
   const LOGIN_PAGE = "/cadastrar.html";
   const TEAM_PAGE = "/minha-equipe.html";
 
-  function escapeHTML(s) {
-    return String(s || "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#39;");
+  const $ = (sel, root = document) => root.querySelector(sel);
+  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+
+  function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, (ch) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;",
+    }[ch]));
   }
 
-  function findOrCreateAuthContainer(nav) {
-    // Prefer a dedicated container if present
-    let box = nav.querySelector(".auth-buttons");
-    if (box) return box;
-
-    // Try to attach to a "nav-inner" wrapper
-    const inner = nav.querySelector(".nav-inner") || nav;
-
-    box = document.createElement("div");
-    box.className = "auth-buttons";
-    inner.appendChild(box);
-    return box;
+  function currentPathWithQuery() {
+    const p = window.location.pathname || "/";
+    const q = window.location.search || "";
+    const h = window.location.hash || "";
+    return p + q + h;
   }
 
   async function fetchMe() {
     try {
-      const r = await fetch(ME_URL, { credentials: "include" });
-      if (!r.ok) return null;
-      return await r.json();
+      const res = await fetch(ME_URL, { credentials: "include" });
+      if (!res.ok) return null;
+      const data = await res.json();
+
+      // suporta os dois formatos: {authenticated:true,...} ou {ok:true,...}
+      if (data && data.authenticated === true) return data;
+      if (data && data.ok === true) {
+        return {
+          authenticated: true,
+          email: data.email,
+          name: data.name,
+        };
+      }
+      return null;
     } catch {
       return null;
     }
   }
 
-  function renderLoggedOut(container) {
-    container.innerHTML = "";
+  function findNavRoot() {
+    // prioriza nav dentro do header, mas funciona em qualquer layout
+    return $("header nav") || $("nav") || $(".navbar");
+  }
+
+  function ensureAuthContainer(nav) {
+    let c = $(".auth-buttons", nav);
+    if (c) return c;
+
+    const inner = $(".nav-inner", nav) || nav;
+    c = document.createElement("div");
+    c.className = "auth-buttons";
+    inner.appendChild(c);
+    return c;
+  }
+
+  function removeLegacyRightSide(nav) {
+    const auth = $(".auth-buttons", nav);
+
+    // remove elementos duplicados que existam fora do container de auth
+    const legacySelectors = [
+      "a.login-btn",
+      "a.btn-login",
+      "a[href*='cadastrar.html']",
+      "button.account-btn",
+      ".account-menu",
+      "#loginBtn",
+      "#loginButton",
+      "#accountBtn",
+      "#accountMenu",
+    ];
+
+    $$(legacySelectors.join(","), nav).forEach((el) => {
+      if (auth && auth.contains(el)) return;
+
+      // só mexer no lado direito (evitar apagar links do menu principal)
+      // Heurística: só remove se estiver perto do final do nav ou dentro de containers comuns
+      const parent = el.parentElement;
+      const parentOk = parent && (
+        parent.classList.contains("auth-buttons") ||
+        parent.classList.contains("nav-right") ||
+        parent.classList.contains("nav-inner") ||
+        parent.tagName === "NAV" ||
+        parent.tagName === "HEADER"
+      );
+
+      if (parentOk) {
+        el.remove();
+      }
+    });
+  }
+
+  function renderLoggedOut(nav) {
+    const auth = ensureAuthContainer(nav);
+    auth.innerHTML = "";
+
     const a = document.createElement("a");
-    a.href = LOGIN_PAGE;
     a.className = "login-btn";
+    a.href = `${LOGIN_PAGE}?next=${encodeURIComponent(currentPathWithQuery())}`;
     a.textContent = "LOGIN / CADASTRE-SE";
-    container.appendChild(a);
+
+    auth.appendChild(a);
   }
 
-  function attachOutsideClose(menu, btn) {
-    function onDocClick(e) {
-      if (menu.classList.contains("hidden")) return;
-      if (menu.contains(e.target) || btn.contains(e.target)) return;
-      menu.classList.add("hidden");
-    }
-    document.addEventListener("click", onDocClick);
-  }
-
-  function renderLoggedIn(container, user) {
-    container.innerHTML = "";
+  function renderLoggedIn(nav, me) {
+    const auth = ensureAuthContainer(nav);
+    auth.innerHTML = "";
 
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "account-btn";
-    btn.id = "accountBtn";
-    btn.setAttribute("aria-label", "Conta");
+    btn.setAttribute("aria-label", "Abrir menu");
 
     const menu = document.createElement("div");
     menu.className = "account-menu hidden";
 
-    const name = escapeHTML(user?.name || user?.first_name || "Conta");
-    const email = escapeHTML(user?.email || "");
+    const name = (me?.name || "").trim() || "Conta";
+    const email = (me?.email || "").trim();
 
     menu.innerHTML = `
       <div class="account-meta">
-        <div class="account-name">${name}</div>
-        <div class="account-email">${email}</div>
+        <div class="account-name">${escapeHtml(name)}</div>
+        ${email ? `<div class="account-email">${escapeHtml(email)}</div>` : ""}
       </div>
-      <a class="menu-item" href="${TEAM_PAGE}">Minha equipe</a>
-      <button class="menu-item danger" type="button" data-action="logout">Sair</button>
+      <a href="${TEAM_PAGE}">Minha equipe</a>
+      <button type="button" class="danger" data-action="logout">Sair</button>
     `;
+
+    auth.appendChild(btn);
+    auth.appendChild(menu);
+
+    function closeMenu() {
+      menu.classList.add("hidden");
+    }
+
+    function toggleMenu() {
+      menu.classList.toggle("hidden");
+    }
 
     btn.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
-      menu.classList.toggle("hidden");
+      toggleMenu();
     });
 
-    // Prevent the "click outside" handler from instantly closing when clicking inside
-    menu.addEventListener("click", (e) => e.stopPropagation());
+    menu.addEventListener("click", (e) => {
+      e.stopPropagation();
+    });
 
-    attachOutsideClose(menu, btn);
+    document.addEventListener("click", closeMenu);
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeMenu();
+    });
 
-    const logoutBtn = menu.querySelector('[data-action="logout"]');
+    const logoutBtn = $("[data-action='logout']", menu);
     if (logoutBtn) {
-      logoutBtn.addEventListener("click", async (e) => {
-        e.preventDefault();
-        e.stopPropagation();
+      logoutBtn.addEventListener("click", async () => {
         try {
           await fetch(LOGOUT_URL, {
             method: "POST",
@@ -103,35 +170,31 @@
             body: "{}",
           });
         } catch {
-          // ignore
+          // ignorar
         }
-        window.location.href = LOGIN_PAGE;
+        window.location.href = "/index.html";
       });
     }
-
-    container.appendChild(btn);
-    container.appendChild(menu);
   }
 
   async function init() {
-    const navs = Array.from(document.querySelectorAll("nav.navbar"));
-    if (!navs.length) return;
+    const nav = findNavRoot();
+    if (!nav) return;
 
-    const user = await fetchMe();
+    ensureAuthContainer(nav);
+    removeLegacyRightSide(nav);
 
-    navs.forEach((nav) => {
-      const container = findOrCreateAuthContainer(nav);
-      if (!user || user.authenticated === false) {
-        renderLoggedOut(container);
-      } else {
-        renderLoggedIn(container, user);
-      }
-    });
+    const me = await fetchMe();
+
+    // se já tem algo hardcoded, remove antes de renderizar
+    removeLegacyRightSide(nav);
+
+    if (me && me.authenticated) {
+      renderLoggedIn(nav, me);
+    } else {
+      renderLoggedOut(nav);
+    }
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init);
-  } else {
-    init();
-  }
+  document.addEventListener("DOMContentLoaded", init);
 })();
