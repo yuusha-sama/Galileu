@@ -1,119 +1,134 @@
-/* Auth navbar helpers (non-destructive): hamburger (conta) + dropdown.
-   This file is safe to include in all pages.
+/* Auth navbar helpers - v7
+   - Logged out: show LOGIN / CADASTRE-SE
+   - Logged in: show hamburger (cardapio.png) + dropdown
 */
 
-/* Ensure nav links have contrast on dark navbar (minha-equipe estava com contraste ruim) */
+/* Ensure contrast of navbar links on dark background (especially minha-equipe) */
 header nav ul li a,
-header nav ul li a:visited{
-  color: #fff;
+header nav ul li a:visited {
+  color: #fff !important;
 }
 
-header nav ul li a:hover{
-  color: #ff7a00;
+header nav ul li a:hover {
+  color: #ff7a00 !important;
 }
 
-/* Auth buttons container */
-header nav .auth-buttons{
+/* Container where JS injects login/hamburger */
+header nav .auth-buttons {
   position: relative;
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-/* If there is an icon inside login button in some pages, hide it */
-#btn-login-nav img{ display: none !important; }
-
-/* Hamburger button shown only when logged in */
-.auth-hamburger-btn{
-  background: transparent;
-  border: 1px solid rgba(255,255,255,0.25);
-  border-radius: 12px;
-  width: 44px;
+/* Login CTA (only when logged out) */
+.login-btn,
+.btn-login {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   height: 44px;
+  padding: 0 18px;
+  border-radius: 999px;
+  background: #ff7a00;
+  color: #fff !important;
+  font-weight: 800;
+  letter-spacing: .02em;
+  text-decoration: none !important;
+  border: none;
+  cursor: pointer;
+  transition: filter 120ms ease, transform 120ms ease;
+}
+
+.login-btn:hover,
+.btn-login:hover { filter: brightness(.95); }
+
+.login-btn:active,
+.btn-login:active { transform: translateY(1px); }
+
+/* Hamburger button (only when logged in) */
+.account-btn {
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.3);
+  background: rgba(0,0,0,0.35);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+  user-select: none;
 }
 
-.auth-hamburger-btn:hover{
+.account-btn:hover {
   border-color: rgba(255,255,255,0.45);
-  background: rgba(255,255,255,0.04);
+  background: rgba(0,0,0,0.45);
 }
 
-.auth-hamburger-btn:active{ transform: scale(0.98); }
+.account-btn:active { transform: translateY(1px); }
 
-.auth-hamburger-btn img{
+/* Draw the icon centered using mask so it stays white even if the PNG is dark */
+.account-btn::before {
+  content: "";
   width: 22px;
   height: 22px;
-  /* make it white on dark navbar (works for dark icons too) */
-  filter: invert(1);
+  background-color: #fff;
+  -webkit-mask: url('/assets/img/cardapio.png') center / contain no-repeat;
+  mask: url('/assets/img/cardapio.png') center / contain no-repeat;
+  display: block;
 }
 
-/* Dropdown */
-.auth-dropdown{
+/* Dropdown menu */
+.account-menu {
   position: absolute;
   right: 0;
   top: calc(100% + 10px);
-  min-width: 270px;
+  min-width: 240px;
   background: #fff;
-  color: #111;
   border-radius: 14px;
-  box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+  box-shadow: 0 16px 32px rgba(0,0,0,0.22);
   overflow: hidden;
   z-index: 9999;
 }
 
-.auth-dropdown[hidden]{ display: none !important; }
+.account-menu.hidden { display: none !important; }
 
-.auth-dropdown .auth-user{
-  padding: 14px 16px;
-  border-bottom: 1px solid rgba(0,0,0,0.08);
+.account-meta {
+  padding: 12px 14px;
+  border-bottom: 1px solid #f0f0f0;
 }
 
-.auth-dropdown .auth-user .name{
-  margin: 0;
-  font-weight: 700;
-  font-size: 15px;
+.account-meta .account-name {
+  font-weight: 800;
+  font-size: 14px;
+  color: #111;
+  line-height: 1.2;
 }
 
-.auth-dropdown .auth-user .email{
-  margin: 3px 0 0;
+.account-meta .account-email {
+  margin-top: 4px;
   font-size: 12px;
   color: #666;
-  word-break: break-word;
+  word-break: break-all;
 }
 
-.auth-dropdown .auth-actions{
+.account-menu a,
+.account-menu button {
+  width: 100%;
   display: flex;
-  flex-direction: column;
-}
-
-.auth-dropdown .auth-actions a,
-.auth-dropdown .auth-actions button{
-  appearance: none;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 12px 14px;
   border: 0;
   background: transparent;
-  text-align: left;
-  width: 100%;
-  padding: 12px 16px;
-  font-size: 14px;
-  cursor: pointer;
   color: #111;
   text-decoration: none;
+  cursor: pointer;
+  font-size: 14px;
 }
 
-.auth-dropdown .auth-actions a:hover,
-.auth-dropdown .auth-actions button:hover{
-  background: rgba(0,0,0,0.05);
-}
+.account-menu a:hover,
+.account-menu button:hover { background: #f6f6f6; }
 
-.auth-dropdown .auth-actions .logout{
-  color: #c40000;
-}
-
-/* Make sure dropdown stays readable on small screens */
-@media (max-width: 520px){
-  .auth-dropdown{ min-width: 220px; }
-}
+.account-menu .danger { color: #c60000; font-weight: 700; }

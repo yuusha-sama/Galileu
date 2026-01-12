@@ -1,160 +1,132 @@
 (function () {
-  const BASE = (window.GALILEU_CONFIG && window.GALILEU_CONFIG.AUTH_BASE) || "/api/auth";
+  const ME_URL = "/api/auth/me/";
+  const LOGOUT_URL = "/api/auth/logout/";
+  const LOGIN_PAGE = "/cadastrar.html";
+  const TEAM_PAGE = "/minha-equipe.html";
 
-  async function fetchJSON(url, options = {}) {
-    const res = await fetch(url, {
-      credentials: "include",
-      ...options,
-      headers: {
-        "Content-Type": "application/json",
-        ...(options.headers || {}),
-      },
+  function escapeHTML(s) {
+    return String(s || "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
+  }
+
+  function findOrCreateAuthContainer(nav) {
+    // Prefer a dedicated container if present
+    let box = nav.querySelector(".auth-buttons");
+    if (box) return box;
+
+    // Try to attach to a "nav-inner" wrapper
+    const inner = nav.querySelector(".nav-inner") || nav;
+
+    box = document.createElement("div");
+    box.className = "auth-buttons";
+    inner.appendChild(box);
+    return box;
+  }
+
+  async function fetchMe() {
+    try {
+      const r = await fetch(ME_URL, { credentials: "include" });
+      if (!r.ok) return null;
+      return await r.json();
+    } catch {
+      return null;
+    }
+  }
+
+  function renderLoggedOut(container) {
+    container.innerHTML = "";
+    const a = document.createElement("a");
+    a.href = LOGIN_PAGE;
+    a.className = "login-btn";
+    a.textContent = "LOGIN / CADASTRE-SE";
+    container.appendChild(a);
+  }
+
+  function attachOutsideClose(menu, btn) {
+    function onDocClick(e) {
+      if (menu.classList.contains("hidden")) return;
+      if (menu.contains(e.target) || btn.contains(e.target)) return;
+      menu.classList.add("hidden");
+    }
+    document.addEventListener("click", onDocClick);
+  }
+
+  function renderLoggedIn(container, user) {
+    container.innerHTML = "";
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "account-btn";
+    btn.id = "accountBtn";
+    btn.setAttribute("aria-label", "Conta");
+
+    const menu = document.createElement("div");
+    menu.className = "account-menu hidden";
+
+    const name = escapeHTML(user?.name || user?.first_name || "Conta");
+    const email = escapeHTML(user?.email || "");
+
+    menu.innerHTML = `
+      <div class="account-meta">
+        <div class="account-name">${name}</div>
+        <div class="account-email">${email}</div>
+      </div>
+      <a class="menu-item" href="${TEAM_PAGE}">Minha equipe</a>
+      <button class="menu-item danger" type="button" data-action="logout">Sair</button>
+    `;
+
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      menu.classList.toggle("hidden");
     });
 
-    const text = await res.text();
-    let data;
-    try {
-      data = text ? JSON.parse(text) : {};
-    } catch {
-      data = { detail: text };
-    }
+    // Prevent the "click outside" handler from instantly closing when clicking inside
+    menu.addEventListener("click", (e) => e.stopPropagation());
 
-    return { res, data };
-  }
+    attachOutsideClose(menu, btn);
 
-  function ensureAuthUI() {
-    const authButtons = document.querySelector("header nav .auth-buttons") || document.querySelector(".auth-buttons");
-    if (!authButtons) return null;
-
-    // Login button (already exists in most pages)
-    let loginLink = document.getElementById("btn-login-nav");
-    if (!loginLink) {
-      // fallback: find by href
-      loginLink = authButtons.querySelector('a[href*="cadastrar"], a[href*="login"], a.btn');
-    }
-    if (!loginLink) {
-      loginLink = document.createElement("a");
-      loginLink.id = "btn-login-nav";
-      loginLink.href = "/cadastrar.html";
-      loginLink.className = "btn";
-      loginLink.textContent = "LOGIN / CADASTRE-SE";
-      authButtons.appendChild(loginLink);
-    }
-
-    // Account hamburger button
-    let accountBtn = document.getElementById("btn-account-menu");
-    if (!accountBtn) {
-      accountBtn = document.createElement("button");
-      accountBtn.type = "button";
-      accountBtn.id = "btn-account-menu";
-      accountBtn.className = "auth-hamburger-btn";
-      accountBtn.setAttribute("aria-label", "Conta");
-      accountBtn.innerHTML = '<img src="/assets/img/cardapio.png" alt="Menu" />';
-      authButtons.appendChild(accountBtn);
-    }
-
-    // Dropdown
-    let dropdown = document.getElementById("account-dropdown");
-    if (!dropdown) {
-      dropdown = document.createElement("div");
-      dropdown.id = "account-dropdown";
-      dropdown.className = "auth-dropdown";
-      dropdown.hidden = true;
-      dropdown.innerHTML = `
-        <div class="auth-user">
-          <p class="name" id="auth-user-name"></p>
-          <p class="email" id="auth-user-email"></p>
-        </div>
-        <div class="auth-actions">
-          <a href="/minha-equipe.html">Minha equipe</a>
-          <button type="button" class="logout" id="auth-logout-btn">Sair</button>
-        </div>
-      `;
-      authButtons.appendChild(dropdown);
-    }
-
-    // Keep it hidden by default; we'll enable after /me
-    accountBtn.style.display = "none";
-    dropdown.hidden = true;
-    loginLink.style.display = "";
-
-    return { authButtons, loginLink, accountBtn, dropdown };
-  }
-
-  function closeDropdown(dropdown) {
-    dropdown.hidden = true;
-  }
-
-  function toggleDropdown(dropdown) {
-    dropdown.hidden = !dropdown.hidden;
-  }
-
-  async function init() {
-    const ui = ensureAuthUI();
-    if (!ui) return;
-
-    const { loginLink, accountBtn, dropdown } = ui;
-
-    // Wire events once
-    if (!accountBtn.dataset.bound) {
-      accountBtn.dataset.bound = "1";
-      accountBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        toggleDropdown(dropdown);
-      });
-
-      document.addEventListener("click", (e) => {
-        if (dropdown.hidden) return;
-        if (dropdown.contains(e.target) || accountBtn.contains(e.target)) return;
-        closeDropdown(dropdown);
-      });
-
-      document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") closeDropdown(dropdown);
-      });
-    }
-
-    const logoutBtn = dropdown.querySelector("#auth-logout-btn");
-    if (logoutBtn && !logoutBtn.dataset.bound) {
-      logoutBtn.dataset.bound = "1";
+    const logoutBtn = menu.querySelector('[data-action="logout"]');
+    if (logoutBtn) {
       logoutBtn.addEventListener("click", async (e) => {
         e.preventDefault();
         e.stopPropagation();
-
         try {
-          await fetchJSON(`${BASE}/logout/`, { method: "POST", body: "{}" });
+          await fetch(LOGOUT_URL, {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: "{}",
+          });
         } catch {
           // ignore
         }
-
-        // reload to refresh UI state
-        window.location.href = "/index.html";
+        window.location.href = LOGIN_PAGE;
       });
     }
 
-    // Check session
-    const { res, data } = await fetchJSON(`${BASE}/me/`, { method: "GET" });
+    container.appendChild(btn);
+    container.appendChild(menu);
+  }
 
-    if (res.ok && data && (data.authenticated === true || data.ok === true)) {
-      // logged in
-      const nameEl = dropdown.querySelector("#auth-user-name");
-      const emailEl = dropdown.querySelector("#auth-user-email");
+  async function init() {
+    const navs = Array.from(document.querySelectorAll("nav.navbar"));
+    if (!navs.length) return;
 
-      const name = (data.name || "").trim();
-      const email = (data.email || "").trim();
+    const user = await fetchMe();
 
-      if (nameEl) nameEl.textContent = name || "Conta";
-      if (emailEl) emailEl.textContent = email || "";
-
-      loginLink.style.display = "none";
-      accountBtn.style.display = "inline-flex";
-    } else {
-      // logged out
-      loginLink.style.display = "";
-      accountBtn.style.display = "none";
-      dropdown.hidden = true;
-    }
+    navs.forEach((nav) => {
+      const container = findOrCreateAuthContainer(nav);
+      if (!user || user.authenticated === false) {
+        renderLoggedOut(container);
+      } else {
+        renderLoggedIn(container, user);
+      }
+    });
   }
 
   if (document.readyState === "loading") {
