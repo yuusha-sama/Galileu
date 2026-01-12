@@ -1,0 +1,119 @@
+/* Auth navbar helpers (non-destructive): hamburger (conta) + dropdown.
+   This file is safe to include in all pages.
+*/
+
+/* Ensure nav links have contrast on dark navbar (minha-equipe estava com contraste ruim) */
+header nav ul li a,
+header nav ul li a:visited{
+  color: #fff;
+}
+
+header nav ul li a:hover{
+  color: #ff7a00;
+}
+
+/* Auth buttons container */
+header nav .auth-buttons{
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* If there is an icon inside login button in some pages, hide it */
+#btn-login-nav img{ display: none !important; }
+
+/* Hamburger button shown only when logged in */
+.auth-hamburger-btn{
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 12px;
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+}
+
+.auth-hamburger-btn:hover{
+  border-color: rgba(255,255,255,0.45);
+  background: rgba(255,255,255,0.04);
+}
+
+.auth-hamburger-btn:active{ transform: scale(0.98); }
+
+.auth-hamburger-btn img{
+  width: 22px;
+  height: 22px;
+  /* make it white on dark navbar (works for dark icons too) */
+  filter: invert(1);
+}
+
+/* Dropdown */
+.auth-dropdown{
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+  min-width: 270px;
+  background: #fff;
+  color: #111;
+  border-radius: 14px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+  overflow: hidden;
+  z-index: 9999;
+}
+
+.auth-dropdown[hidden]{ display: none !important; }
+
+.auth-dropdown .auth-user{
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+
+.auth-dropdown .auth-user .name{
+  margin: 0;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.auth-dropdown .auth-user .email{
+  margin: 3px 0 0;
+  font-size: 12px;
+  color: #666;
+  word-break: break-word;
+}
+
+.auth-dropdown .auth-actions{
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-dropdown .auth-actions a,
+.auth-dropdown .auth-actions button{
+  appearance: none;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  color: #111;
+  text-decoration: none;
+}
+
+.auth-dropdown .auth-actions a:hover,
+.auth-dropdown .auth-actions button:hover{
+  background: rgba(0,0,0,0.05);
+}
+
+.auth-dropdown .auth-actions .logout{
+  color: #c40000;
+}
+
+/* Make sure dropdown stays readable on small screens */
+@media (max-width: 520px){
+  .auth-dropdown{ min-width: 220px; }
+}

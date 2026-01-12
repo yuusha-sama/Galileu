@@ -13,52 +13,28 @@
 
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="./css/index.css">
+  <link rel="stylesheet" href="/css/navbar-auth.css?v=5">
 </head>
 
 <body>
 
-    <header class="header">
-  <div class="nav-container">
-    <a href="/index.html" class="logo" aria-label="Galileu Robotics">
-      <img src="/assets/img/logo.png" alt="Galileu Robotics" />
-    </a>
-
-    <div class="nav-links">
-      <ul>
-        <li><a href="/eventos.html">EVENTOS</a></li>
-        <li><a href="/blog.html">BLOG</a></li>
-        <li><a href="/dashboard.html">FORUM</a></li>
-        <li><a href="/sobre.html">SOBRE NÓS</a></li>
-      </ul>
-    </div>
-
-    <div class="auth-buttons">
-      <a id="btn-login-nav" href="/cadastrar.html" class="btn">
-        <img src="/assets/img/leoLogin.png" alt="" aria-hidden="true" />
-        LOGIN / CADASTRE-SE
-      </a>
-
-      <div id="account-menu" class="account-menu" hidden>
-        <a href="#" id="account-toggle" class="btn account-btn" aria-expanded="false">
-          <span class="account-icon" aria-hidden="true">☰</span>
-          <span class="account-name" id="account-name">CONTA</span>
-          <span class="caret" aria-hidden="true">▾</span>
-        </a>
-
-        <div id="account-dropdown" class="account-dropdown" hidden>
-          <div class="account-meta">
-            <div id="account-meta-name" class="account-meta-name">—</div>
-            <div id="account-meta-email" class="account-meta-email">—</div>
-          </div>
-          <a class="account-item" href="/minha-equipe.html">Minha equipe</a>
-          <button type="button" class="account-item logout" data-action="logout">Sair</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</header>
-
-
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="index.html"><img src="./assets/img/GalileuLogo.png" alt="Logo da Galileu Robotics"></a>
+            </div>
+            <ul>
+                <li><a href="eventos.html">Eventos</a></li>
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="artigo.html">Forum</a></li>
+                <li><a href="sobre.html">Sobre Nós</a></li>
+            </ul>
+            <div class="auth-buttons">
+                <a id="btn-login-nav" href="cadastrar.html" class="btn"> LOGIN /
+                    CADASTRE-SE</a>
+            </div>
+        </nav>
+    </header>
 
     <main>
         <section id="hero" class="hero-section">
@@ -221,10 +197,10 @@
 
         </div>
     </footer>
-<script src="/config.js?v=3"></script>
-<script src="/js/auth.js?v=3"></script>
-<script src="/js/navbar.js?v=4"></script>
-<script src="/js/main.js?v=3"></script>
+
+    <script src="js/main.js"></script>
+
+  <script src="/js/navbar.js?v=5"></script>
 </body>
 
 </html>
