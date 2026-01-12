@@ -1,18 +1,62 @@
 <!DOCTYPE html>
-
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Dashboard</title>
-<meta content="0;url=/minha-equipe.html" http-equiv="refresh"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard - Galileu</title>
+  <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
-<script>
-    location.replace("/minha-equipe.html" + location.search + location.hash);
-  </script>
-<noscript>
-<p>Redirecionando… <a href="/minha-equipe.html">clique aqui</a>.</p>
-</noscript>
+<header class="header">
+  <nav class="navbar" role="navigation">
+    <a class="navbar-logo" href="/index.html" aria-label="Galileu Robotics - Home">
+      <img src="/assets/img/GalileuLogo.png" alt="Galileu Robotics">
+    </a>
+
+    <button id="btn-hamburger" class="hamburger" type="button" aria-label="Abrir menu" aria-expanded="false">☰</button>
+
+    <ul class="navbar-links" id="nav-links">
+      <li><a href="/eventos.html">EVENTOS</a></li>
+      <li><a href="/blog.html">BLOG</a></li>
+      <li><a href="/artigo.html">FORUM</a></li>
+      <li><a href="/sobre.html">SOBRE NÓS</a></li>
+    </ul>
+
+    <div class="navbar-actions">
+      <a id="btn-login-nav" href="/cadastrar.html" class="btn-login">
+        <img src="/assets/img/leoLogin.png" alt="" aria-hidden="true">
+        <span>LOGIN / CADASTRE-SE</span>
+      </a>
+
+      <div id="account-menu" class="account" hidden>
+        <button id="account-toggle" class="account-toggle" type="button" aria-expanded="false">
+          <span id="account-name">CONTA</span>
+          <span class="caret">▾</span>
+        </button>
+
+        <div id="account-dropdown" class="account-dropdown" hidden>
+          <div class="account-meta">
+            <div id="account-meta-name" class="account-meta-name">—</div>
+            <div id="account-meta-email" class="account-meta-email">—</div>
+          </div>
+
+          <a class="account-item" href="/minha-equipe.html">Minha equipe</a>
+          <button class="account-item account-logout" type="button" data-action="logout">Sair</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+  <main style="max-width: 900px; margin: 40px auto; padding: 0 16px;">
+    <h1>Dashboard</h1>
+    <p id="user-box">Carregando...</p>
+    <button id="btn-logout" style="margin-top: 16px;">Sair</button>
+  </main>
+
+
+
+<script src="/config.js?v=3"></script>
+<script src="/js/auth.js?v=3"></script>
+<script src="/js/navbar.js?v=3"></script>
 </body>
 </html>
