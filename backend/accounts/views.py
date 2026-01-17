@@ -4,9 +4,9 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
+from .models import UserProfile
 from datetime import date
 
-from .models import UserProfile
 
 
 def healthcheck(request):
@@ -123,7 +123,6 @@ def me(request):
         return JsonResponse({"authenticated": False}, status=401)
 
     profile, _ = UserProfile.objects.get_or_create(user=request.user)
-
     p = profile.to_dict()
 
     return JsonResponse({
