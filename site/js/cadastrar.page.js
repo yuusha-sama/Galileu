@@ -131,7 +131,10 @@
       const email = (document.getElementById("cadastro-email")?.value || "").trim();
       const name = (document.getElementById("cadastro-nome")?.value || "").trim();
       const password = document.getElementById("cadastro-senha")?.value || "";
-      const password2 = document.getElementById("cadastro-senha2")?.value || "";
+      const password2 = document.getElementById("cadastro-confirmar")?.value || "";
+
+      const cpf = (document.getElementById("cadastro-cpf")?.value || "").trim();
+      const birthdate = (document.getElementById("cadastro-nascimento")?.value || "").trim();
 
       if (!email || !name || !password) {
         setMsg("Preencha email, nome e senha.");
@@ -154,7 +157,7 @@
       }
 
       try {
-        await window.GalileuAuth.register({ email, password, name });
+        await window.GalileuAuth.register({ email, password, name, cpf, birthdate });
         // auto-login after register
         await doLogin(email, password);
         setMsg("Cadastro realizado. Redirecionando...", "ok");

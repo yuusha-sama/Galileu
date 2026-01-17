@@ -4,6 +4,9 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
+from datetime import date
+
+from .models import UserProfile
 
 
 def healthcheck(request):
@@ -55,8 +58,9 @@ def register(request):
     password = data.get("password") or ""
     name = (data.get("name") or "").strip()
 
-    # campos opcionais vindos do formulário (não salva no User padrão, mas valida se vier)
-    cpf = (data.get("cpf") or "").strip()
+    # campos opcionais vindos do formulário
+    cpf = (data.get("cpf") or data.get("cadastro_cpf") or "").strip()
+    birthdate_raw = (data.get("birthdate") or data.get("nascimento") or "").strip()
 
     if not email or not password:
         return JsonResponse({"detail": "Email e senha são obrigatórios"}, status=400)
@@ -76,6 +80,20 @@ def register(request):
         password=password,
         first_name=name[:150],
     )
+
+    # garante profile e salva campos opcionais
+    profile, _ = UserProfile.objects.get_or_create(user=user)
+    if cpf:
+        profile.cpf = cpf
+
+    if birthdate_raw:
+        try:
+            y, m, d = birthdate_raw.split("-")
+            profile.birthdate = date(int(y), int(m), int(d))
+        except Exception:
+            return JsonResponse({"detail": "Data de nascimento deve ser YYYY-MM-DD"}, status=400)
+
+    profile.save()
 
     return JsonResponse({"ok": True, "id": user.id, "email": user.email})
 
@@ -104,11 +122,56 @@ def me(request):
     if not request.user.is_authenticated:
         return JsonResponse({"authenticated": False}, status=401)
 
+    profile, _ = UserProfile.objects.get_or_create(user=request.user)
+
+    p = profile.to_dict()
+
     return JsonResponse({
         "authenticated": True,
         "email": request.user.email,
         "name": request.user.first_name,
+        "cpf": p.get("cpf", ""),
+        "birthdate": p.get("birthdate", ""),
+        "photo_data": p.get("photo_data", ""),
     })
+
+
+@csrf_exempt
+def profile_update(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({"detail": "Não autenticado"}, status=401)
+
+    if request.method not in ("POST", "PUT", "PATCH"):
+        return JsonResponse({"detail": "Method not allowed"}, status=405)
+
+    data = _json(request)
+    if data is None:
+        return JsonResponse({"detail": "Invalid JSON"}, status=400)
+
+    profile, _ = UserProfile.objects.get_or_create(user=request.user)
+
+    if "photo_data" in data:
+        profile.photo_data = data.get("photo_data") or ""
+
+    if "cpf" in data:
+        cpf = (data.get("cpf") or "").strip()
+        if cpf and not _cpf_is_valid(cpf):
+            return JsonResponse({"detail": "CPF inválido"}, status=400)
+        profile.cpf = cpf
+
+    if "birthdate" in data:
+        birthdate_raw = (data.get("birthdate") or "").strip()
+        if birthdate_raw:
+            try:
+                y, m, d = birthdate_raw.split("-")
+                profile.birthdate = date(int(y), int(m), int(d))
+            except Exception:
+                return JsonResponse({"detail": "birthdate deve ser YYYY-MM-DD"}, status=400)
+        else:
+            profile.birthdate = None
+
+    profile.save()
+    return JsonResponse({"ok": True, **profile.to_dict()})
 
 
 @csrf_exempt
