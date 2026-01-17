@@ -1,8 +1,8 @@
 (() => {
   const API = {
-    teamMe: "/api/teams/me/",
-    members: "/api/teams/members/",
-    robots: "/api/teams/robots/",
+    teamMe: "/api/team/me/",
+    members: "/api/team/members/",
+    robots: "/api/team/robots/",
     authMe: "/api/auth/me/",
     authProfile: "/api/auth/profile/",
     authLogout: "/api/auth/logout/",
@@ -44,13 +44,10 @@
     me: {},
   };
 
-  function escapeHtml(s) {
-    return String(s ?? "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#39;");
+  function setText(el, value, fallback = "-") {
+    if (!el) return;
+    const v = (value ?? "").toString().trim();
+    el.textContent = v ? v : fallback;
   }
 
   function toBRDate(iso) {
@@ -61,10 +58,13 @@
     return `${dd}/${mm}/${yy}`;
   }
 
-  function setText(el, value, fallback = "-") {
-    if (!el) return;
-    const v = (value ?? "").toString().trim();
-    el.textContent = v ? v : fallback;
+  function escapeHtml(s) {
+    return String(s ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
   }
 
   async function request(url, opts = {}) {
@@ -82,13 +82,11 @@
       data = { detail: text };
     }
 
-    if (!res.ok) {
-      throw new Error((data && data.detail) || `Erro ${res.status}`);
-    }
+    if (!res.ok) throw new Error((data && data.detail) || `Erro ${res.status}`);
     return data;
   }
 
-  async function readFileAsDataURL(file) {
+  function readFileAsDataURL(file) {
     return new Promise((resolve, reject) => {
       const fr = new FileReader();
       fr.onload = () => resolve(String(fr.result || ""));
@@ -118,7 +116,7 @@
     state.robots = data.robots || [];
   }
 
-  function renderTeam() {
+  function render() {
     const t = state.team;
 
     if (els.teamCard) {
@@ -141,13 +139,15 @@
       els.memberList.innerHTML = "";
       state.members.forEach((m) => {
         const li = document.createElement("li");
-        li.style.display = "flex";
-        li.style.alignItems = "center";
-        li.style.justifyContent = "space-between";
-        li.style.gap = "10px";
 
-        const name = document.createElement("span");
-        name.textContent = m.name;
+        const wrap = document.createElement("div");
+        wrap.style.display = "flex";
+        wrap.style.justifyContent = "space-between";
+        wrap.style.alignItems = "center";
+        wrap.style.gap = "10px";
+
+        const span = document.createElement("span");
+        span.textContent = m.name;
 
         const del = document.createElement("button");
         del.type = "button";
@@ -157,14 +157,14 @@
         del.style.background = "transparent";
         del.style.cursor = "pointer";
         del.style.fontSize = "20px";
-
         del.onclick = async () => {
           await request(`${API.members}${m.id}/`, { method: "DELETE" });
           await refresh();
         };
 
-        li.appendChild(name);
-        li.appendChild(del);
+        wrap.appendChild(span);
+        wrap.appendChild(del);
+        li.appendChild(wrap);
         els.memberList.appendChild(li);
       });
     }
@@ -173,13 +173,15 @@
       els.robotList.innerHTML = "";
       state.robots.forEach((r) => {
         const li = document.createElement("li");
-        li.style.display = "flex";
-        li.style.alignItems = "center";
-        li.style.justifyContent = "space-between";
-        li.style.gap = "10px";
 
-        const name = document.createElement("span");
-        name.textContent = r.name;
+        const wrap = document.createElement("div");
+        wrap.style.display = "flex";
+        wrap.style.justifyContent = "space-between";
+        wrap.style.alignItems = "center";
+        wrap.style.gap = "10px";
+
+        const span = document.createElement("span");
+        span.textContent = r.name;
 
         const del = document.createElement("button");
         del.type = "button";
@@ -189,14 +191,14 @@
         del.style.background = "transparent";
         del.style.cursor = "pointer";
         del.style.fontSize = "20px";
-
         del.onclick = async () => {
           await request(`${API.robots}${r.id}/`, { method: "DELETE" });
           await refresh();
         };
 
-        li.appendChild(name);
-        li.appendChild(del);
+        wrap.appendChild(span);
+        wrap.appendChild(del);
+        li.appendChild(wrap);
         els.robotList.appendChild(li);
       });
     }
@@ -205,7 +207,7 @@
   async function refresh() {
     await loadMe();
     await loadTeam();
-    renderTeam();
+    render();
   }
 
   function openTeamModal() {
@@ -341,11 +343,7 @@
         if (!file) return;
         const photo_data = await readFileAsDataURL(file);
 
-        await request(API.authProfile, {
-          method: "POST",
-          body: JSON.stringify({ photo_data }),
-        });
-
+        await request(API.authProfile, { method: "POST", body: JSON.stringify({ photo_data }) });
         await refresh();
         overlay.remove();
       } catch (e) {
@@ -354,13 +352,13 @@
     };
   }
 
-  function wireHandlers() {
+  function wire() {
     els.addMember?.addEventListener("click", async () => {
       const name = (els.memberName?.value || "").trim();
       if (!name) return;
       try {
         await request(API.members, { method: "POST", body: JSON.stringify({ name }) });
-        els.memberName.value = "";
+        if (els.memberName) els.memberName.value = "";
         await refresh();
       } catch (e) {
         alert(e.message || "Erro ao adicionar membro");
@@ -372,7 +370,7 @@
       if (!name) return;
       try {
         await request(API.robots, { method: "POST", body: JSON.stringify({ name }) });
-        els.robotName.value = "";
+        if (els.robotName) els.robotName.value = "";
         await refresh();
       } catch (e) {
         alert(e.message || "Erro ao adicionar robô");
@@ -383,19 +381,16 @@
     els.btnEditPhoto?.addEventListener("click", openPhotoModal);
 
     els.btnSair?.addEventListener("click", async () => {
-      try {
-        await request(API.authLogout, { method: "POST", body: "{}" });
-      } catch {}
+      try { await request(API.authLogout, { method: "POST", body: "{}" }); } catch {}
       window.location.href = "/index.html";
     });
   }
 
   document.addEventListener("DOMContentLoaded", async () => {
-    wireHandlers();
+    wire();
     try {
       await refresh();
     } catch (e) {
-      // se não estiver logado, vai aparecer "Não autenticado" quando tentar salvar
       console.warn(e);
     }
   });
