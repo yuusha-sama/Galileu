@@ -73,6 +73,39 @@
   gap: 20px;
   position: relative;
   align-items: center;
+  overflow: hidden;
+}
+
+/* ===== Legibilidade do texto quando houver banner ===== */
+.equipe-header.has-banner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.80) 0%,
+    rgba(255, 255, 255, 0.60) 45%,
+    rgba(255, 255, 255, 0.35) 100%
+  );
+}
+
+.equipe-header.has-banner > * {
+  position: relative;
+  z-index: 1;
+}
+
+.equipe-header.has-banner .equipe-info {
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 12px;
+  padding: 10px 12px;
+  backdrop-filter: blur(2px);
+}
+
+.equipe-header.has-banner .equipe-info h2,
+.equipe-header.has-banner .equipe-info p {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.20);
 }
 
 .logo-equipe img {

@@ -1,14 +1,7 @@
 (() => {
-  const API = {
-    teamMe: "/api/team/me/",
-    members: "/api/team/members/",
-    robots: "/api/team/robots/",
-    authMe: "/api/auth/me/",
-    authProfile: "/api/auth/profile/",
-    authLogout: "/api/auth/logout/",
-  };
-
-  const $ = (sel) => document.querySelector(sel);
+  function $(sel) {
+    return document.querySelector(sel);
+  }
 
   const els = {
     teamCard: $("#teamCard"),
@@ -28,20 +21,30 @@
 
     profilePhoto: $("#profilePhoto"),
     btnEditPhoto: $("#btnEditPhoto"),
-
     meEmail: $("#me-email"),
     meNome: $("#me-nome"),
     meNascimento: $("#me-nascimento"),
     meCpf: $("#me-cpf"),
+  };
 
-    btnSair: $("#btn-sair"),
+  const API = {
+    teamMe: "/api/team/me/",
+    members: "/api/team/members/",
+    robots: "/api/team/robots/",
+    authMe: "/api/auth/me/",
+    authProfile: "/api/auth/profile/",
   };
 
   const state = {
-    team: { name: "", slogan: "", created_date: "", logo_data: "", banner_data: "" },
-    members: [],
-    robots: [],
-    me: {},
+    team: {
+      name: "",
+      slogan: "",
+      created_date: "",
+      logo_data: "",
+      banner_data: "",
+      members: [], // [{id,name}] ou ["nome"]
+      robots: [], // [{id,name}] ou ["nome"]
+    },
   };
 
   function setText(el, value, fallback = "-") {
@@ -59,16 +62,24 @@
   }
 
   function escapeHtml(s) {
-    return String(s ?? "")
+    return (s || "")
       .replaceAll("&", "&amp;")
       .replaceAll("<", "&lt;")
       .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#39;");
+      .replaceAll('"', "&quot;");
   }
 
-  async function request(url, opts = {}) {
-    const res = await fetch(url, {
+  async function readFileAsDataURL(file) {
+    return new Promise((resolve, reject) => {
+      const fr = new FileReader();
+      fr.onload = () => resolve(String(fr.result || ""));
+      fr.onerror = reject;
+      fr.readAsDataURL(file);
+    });
+  }
+
+  async function request(path, opts = {}) {
+    const res = await fetch(path, {
       credentials: "include",
       headers: { "Content-Type": "application/json", ...(opts.headers || {}) },
       ...opts,
@@ -78,45 +89,42 @@
     let data;
     try {
       data = text ? JSON.parse(text) : {};
-    } catch {
+    } catch (_) {
       data = { detail: text };
     }
 
-    if (!res.ok) throw new Error((data && data.detail) || `Erro ${res.status}`);
+    if (!res.ok) {
+      throw new Error((data && data.detail) || `Erro ${res.status}`);
+    }
     return data;
   }
 
-  function readFileAsDataURL(file) {
-    return new Promise((resolve, reject) => {
-      const fr = new FileReader();
-      fr.onload = () => resolve(String(fr.result || ""));
-      fr.onerror = reject;
-      fr.readAsDataURL(file);
-    });
-  }
-
   async function loadMe() {
-    const me = await request(API.authMe, { method: "GET", headers: {} });
-    state.me = me;
-
-    setText(els.meEmail, me.email);
-    setText(els.meNome, me.name);
-    setText(els.meNascimento, me.birthdate ? toBRDate(me.birthdate) : "-");
-    setText(els.meCpf, me.cpf || "-");
-
-    if (els.profilePhoto && me.photo_data) {
-      els.profilePhoto.src = me.photo_data;
+    try {
+      const r = await request(API.authMe, { method: "GET", headers: {} });
+      setText(els.meEmail, r.email);
+      setText(els.meNome, r.name);
+      setText(els.meNascimento, r.birthdate ? toBRDate(r.birthdate) : "-");
+      setText(els.meCpf, r.cpf || "-");
+      if (els.profilePhoto && r.photo_data) {
+        els.profilePhoto.src = r.photo_data;
+      }
+    } catch (_) {
+      // não logado
     }
   }
 
   async function loadTeam() {
     const data = await request(API.teamMe, { method: "GET", headers: {} });
-    state.team = data.team || state.team;
-    state.members = data.members || [];
-    state.robots = data.robots || [];
+    state.team = {
+      ...state.team,
+      ...(data.team || {}),
+      members: data.members || [],
+      robots: data.robots || [],
+    };
   }
 
-  function render() {
+  function renderTeam() {
     const t = state.team;
 
     if (els.teamCard) {
@@ -124,30 +132,37 @@
         els.teamCard.style.backgroundImage = `url('${t.banner_data}')`;
         els.teamCard.style.backgroundSize = "cover";
         els.teamCard.style.backgroundPosition = "center";
+        els.teamCard.classList.add("has-banner");
       } else {
         els.teamCard.style.backgroundImage = "none";
+        els.teamCard.classList.remove("has-banner");
       }
     }
 
-    if (els.teamLogo && t.logo_data) els.teamLogo.src = t.logo_data;
+    if (els.teamLogo && t.logo_data) {
+      els.teamLogo.src = t.logo_data;
+    }
+
+    const created = t.created_date || t.created_on || "";
 
     setText(els.teamName, t.name);
-    setText(els.teamCreated, toBRDate(t.created_date));
+    setText(els.teamCreated, toBRDate(created));
     setText(els.teamSlogan, t.slogan);
 
     if (els.memberList) {
       els.memberList.innerHTML = "";
-      state.members.forEach((m) => {
-        const li = document.createElement("li");
+      (t.members || []).forEach((m) => {
+        const memberName = typeof m === "string" ? m : (m?.name || "");
+        const memberId = typeof m === "object" && m ? m.id : null;
 
-        const wrap = document.createElement("div");
-        wrap.style.display = "flex";
-        wrap.style.justifyContent = "space-between";
-        wrap.style.alignItems = "center";
-        wrap.style.gap = "10px";
+        const li = document.createElement("li");
+        li.style.display = "flex";
+        li.style.justifyContent = "space-between";
+        li.style.alignItems = "center";
+        li.style.gap = "10px";
 
         const span = document.createElement("span");
-        span.textContent = m.name;
+        span.textContent = memberName;
 
         const del = document.createElement("button");
         del.type = "button";
@@ -158,30 +173,31 @@
         del.style.cursor = "pointer";
         del.style.fontSize = "20px";
         del.onclick = async () => {
-          await request(`${API.members}${m.id}/`, { method: "DELETE" });
+          if (memberId === null || memberId === undefined) return;
+          await request(`${API.members}${memberId}/`, { method: "DELETE" });
           await refresh();
         };
 
-        wrap.appendChild(span);
-        wrap.appendChild(del);
-        li.appendChild(wrap);
+        li.appendChild(span);
+        li.appendChild(del);
         els.memberList.appendChild(li);
       });
     }
 
     if (els.robotList) {
       els.robotList.innerHTML = "";
-      state.robots.forEach((r) => {
-        const li = document.createElement("li");
+      (t.robots || []).forEach((r) => {
+        const robotName = typeof r === "string" ? r : (r?.name || "");
+        const robotId = typeof r === "object" && r ? r.id : null;
 
-        const wrap = document.createElement("div");
-        wrap.style.display = "flex";
-        wrap.style.justifyContent = "space-between";
-        wrap.style.alignItems = "center";
-        wrap.style.gap = "10px";
+        const li = document.createElement("li");
+        li.style.display = "flex";
+        li.style.justifyContent = "space-between";
+        li.style.alignItems = "center";
+        li.style.gap = "10px";
 
         const span = document.createElement("span");
-        span.textContent = r.name;
+        span.textContent = robotName;
 
         const del = document.createElement("button");
         del.type = "button";
@@ -192,26 +208,31 @@
         del.style.cursor = "pointer";
         del.style.fontSize = "20px";
         del.onclick = async () => {
-          await request(`${API.robots}${r.id}/`, { method: "DELETE" });
+          if (robotId === null || robotId === undefined) return;
+          await request(`${API.robots}${robotId}/`, { method: "DELETE" });
           await refresh();
         };
 
-        wrap.appendChild(span);
-        wrap.appendChild(del);
-        li.appendChild(wrap);
+        li.appendChild(span);
+        li.appendChild(del);
         els.robotList.appendChild(li);
       });
     }
   }
 
   async function refresh() {
-    await loadMe();
-    await loadTeam();
-    render();
+    try {
+      await loadMe();
+      await loadTeam();
+      renderTeam();
+    } catch (e) {
+      console.warn(e);
+    }
   }
 
   function openTeamModal() {
     const t = state.team;
+    const created = t.created_date || t.created_on || "";
 
     const overlay = document.createElement("div");
     overlay.style.position = "fixed";
@@ -221,7 +242,9 @@
     overlay.style.display = "flex";
     overlay.style.alignItems = "center";
     overlay.style.justifyContent = "center";
-    overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+    overlay.onclick = (e) => {
+      if (e.target === overlay) overlay.remove();
+    };
 
     const box = document.createElement("div");
     box.style.width = "min(680px, 92vw)";
@@ -244,7 +267,7 @@
 
         <div>
           <label style="font-size:12px;color:#444;">Criado em</label>
-          <input id="team_created" type="date" value="${escapeHtml(t.created_date)}" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:10px;">
+          <input id="team_created" type="date" value="${escapeHtml(created)}" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:10px;">
         </div>
 
         <div style="grid-column:1/3;">
@@ -284,7 +307,7 @@
         const logoFile = box.querySelector("#team_logo").files[0];
         const bannerFile = box.querySelector("#team_banner").files[0];
 
-        const payload = { name, slogan, created_date };
+        const payload = { name, slogan, created_date, created_on: created_date };
         if (logoFile) payload.logo_data = await readFileAsDataURL(logoFile);
         if (bannerFile) payload.banner_data = await readFileAsDataURL(bannerFile);
 
@@ -292,7 +315,7 @@
         await refresh();
         overlay.remove();
       } catch (e) {
-        alert(e.message || "Erro ao salvar equipe");
+        alert(e.message || "Erro ao salvar");
       }
     };
   }
@@ -306,7 +329,9 @@
     overlay.style.display = "flex";
     overlay.style.alignItems = "center";
     overlay.style.justifyContent = "center";
-    overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+    overlay.onclick = (e) => {
+      if (e.target === overlay) overlay.remove();
+    };
 
     const box = document.createElement("div");
     box.style.width = "min(520px, 92vw)";
@@ -323,6 +348,7 @@
 
       <div style="margin-top:14px;">
         <input id="profile_photo" type="file" accept="image/*" style="width:100%;">
+        <p style="margin:10px 0 0 0;color:#666;font-size:12px;">A imagem fica salva na sua conta (persistência no banco).</p>
       </div>
 
       <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:14px;">
@@ -342,17 +368,19 @@
         const file = box.querySelector("#profile_photo").files[0];
         if (!file) return;
         const photo_data = await readFileAsDataURL(file);
-
-        await request(API.authProfile, { method: "POST", body: JSON.stringify({ photo_data }) });
+        await request(API.authProfile, {
+          method: "POST",
+          body: JSON.stringify({ photo_data }),
+        });
         await refresh();
         overlay.remove();
       } catch (e) {
-        alert(e.message || "Erro ao salvar foto");
+        alert(e.message || "Erro ao salvar");
       }
     };
   }
 
-  function wire() {
+  function wireHandlers() {
     els.addMember?.addEventListener("click", async () => {
       const name = (els.memberName?.value || "").trim();
       if (!name) return;
@@ -379,19 +407,10 @@
 
     els.btnEditTeam?.addEventListener("click", openTeamModal);
     els.btnEditPhoto?.addEventListener("click", openPhotoModal);
-
-    els.btnSair?.addEventListener("click", async () => {
-      try { await request(API.authLogout, { method: "POST", body: "{}" }); } catch {}
-      window.location.href = "/index.html";
-    });
   }
 
-  document.addEventListener("DOMContentLoaded", async () => {
-    wire();
-    try {
-      await refresh();
-    } catch (e) {
-      console.warn(e);
-    }
+  document.addEventListener("DOMContentLoaded", () => {
+    wireHandlers();
+    refresh();
   });
 })();
